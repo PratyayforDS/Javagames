@@ -63,8 +63,9 @@ public class Main {
             frame.add(snakeGame);
 
             // Refresh the frame
-            frame.revalidate();
-            frame.repaint();
+            frame.pack();
+            frame.setVisible(true);
+            snakeGame.requestFocusInWindow();
         }
     }
 }

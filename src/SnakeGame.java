@@ -31,7 +31,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     int velocityy;
     boolean gameOver = false;
 
-    // Game Over screen (must copy for other games)
+    // Game Over screen
     private GameOverScreen gameOverScreen;
 
     SnakeGame(int boardWidth, int boardHeight) { //snake game constructor
@@ -70,9 +70,8 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     }
 
     public void draw(Graphics g) {
-        // food
-        g.setColor(Color.red);
-        g.fillRect(snakeFood.x * tileSize, snakeFood.y * tileSize, tileSize, tileSize);
+        // Draw food (apple)
+        drawApple(g, snakeFood.x * tileSize, snakeFood.y * tileSize);
 
         // snake head
         g.setColor(Color.WHITE);
@@ -91,8 +90,16 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     }
 
     public void putFood() {
-        snakeFood.x = rand.nextInt(boardWidth / tileSize); //randomly assign food position
-        snakeFood.y = rand.nextInt(boardHeight / tileSize);
+        // Avoid spawning food in the top-left corner (where the score is displayed)
+        // Let's assume the score occupies a space of 2 rows (i.e., y < 2) and x < 5 columns
+        int scoreAreaHeight = 2; // height of the score area in tiles
+        int scoreAreaWidth = 5;  // width of the score area in tiles
+
+        do {
+            // Randomly assign food position, avoiding the top-left corner where the score is
+            snakeFood.x = rand.nextInt(boardWidth / tileSize);
+            snakeFood.y = rand.nextInt(boardHeight / tileSize);
+        } while (snakeFood.y < scoreAreaHeight && snakeFood.x < scoreAreaWidth); // Ensure food is not in the score area
     }
 
     public boolean collide(Tile tile1, Tile tile2) { //normally it checks for food eat , may check for collision to snake also
@@ -147,7 +154,24 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         gameOverScreen.setSize(getSize()); // Match the game panel's size
         add(gameOverScreen); // Add the GameOverScreen panel on top of the game screen
         gameOverScreen.repaint(); // Refresh to show the game-over screen
-    } ///must copy for other games
+    }
+
+    // Method to draw an apple instead of a frog
+    private void drawApple(Graphics g, int x, int y) {
+        // Draw the apple shape (red circle with a little stem)
+        g.setColor(Color.RED);
+        g.fillOval(x, y, tileSize, tileSize); // Apple body
+
+        // Draw the stem (brown)
+        g.setColor(new Color(139, 69, 19)); // Brown color for the stem
+        g.fillRect(x + tileSize / 2 - 3, y - 6, 6, 12); // Stem
+
+        // Draw a small leaf (green)
+        g.setColor(Color.GREEN);
+        int[] xPoints = {x + tileSize / 2, x + tileSize / 2 - 5, x + tileSize / 2 + 5};
+        int[] yPoints = {y - 6, y - 12, y - 12};
+        g.fillPolygon(xPoints, yPoints, 3); // Leaf
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {

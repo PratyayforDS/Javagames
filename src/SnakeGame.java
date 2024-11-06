@@ -4,171 +4,185 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
 
-
-
-
-public class SnakeGame extends JPanel implements ActionListener,KeyListener {
+public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     int gameSpeed = 750;
-
+    int score = 0; // Variable to track the player's score
 
     private class Tile { //for tiling or dividing screen in tiles
-
         int x;
         int y;
         Tile(int x, int y) {
             this.x = x;
             this.y = y;
         }
-
     }
-
 
     int boardHeight;
     int boardWidth;
     int tileSize = 25;
     Tile snakeHead;
     ArrayList<Tile> snakeBody;
-
-
     Tile snakeFood;
-
     Random rand;
 
+    // Game stuff
     Timer gameTimer;
-
     int velocityx; //tile count
     int velocityy;
+    boolean gameOver = false;
 
+    // Game Over screen (must copy for other games)
+    private GameOverScreen gameOverScreen;
 
-
-    SnakeGame(int boardWidth,int boardHeight){ //snake game  constructor
+    SnakeGame(int boardWidth, int boardHeight) { //snake game constructor
         this.boardHeight = boardHeight;
         this.boardWidth = boardWidth;
-        setPreferredSize(new Dimension(boardWidth,boardHeight));
+        setPreferredSize(new Dimension(boardWidth, boardHeight));
         setBackground(Color.BLUE);
         addKeyListener(this);
         setFocusable(true);
 
-
-        //snake stuff
-        snakeHead = new Tile(5,5);
-        snakeBody = new ArrayList<Tile>();
-        snakeFood = new Tile(10,10);
+        // Initialize snake and game elements
+        snakeHead = new Tile(5, 5);
+        snakeBody = new ArrayList<>();
+        snakeFood = new Tile(10, 10);
         velocityx = 1;
         velocityy = 0; // permitted val -1,0,1
 
-
-        //food stuff
+        // food stuff
         rand = new Random();
-
         putFood();
-        gameTimer = new Timer(gameSpeed,this); //implement every time food eaten , dec timer by 50ms
+
+        gameTimer = new Timer(gameSpeed, this); //implement every time food eaten , dec timer by 50ms
         gameTimer.start();
 
-
+        // Initialize GameOverScreen (but don't add it to the frame yet)
+        gameOverScreen = new GameOverScreen(score);
     }
 
-    public void paint (Graphics g){
+    public void paint(Graphics g) {
         super.paint(g);
-        draw(g);
+        if (!gameOver) {
+            draw(g);
+        } else {
+            showGameOver();
+        }
     }
-    public void draw(Graphics g){
 
-
-        //food
+    public void draw(Graphics g) {
+        // food
         g.setColor(Color.red);
-        g.fillRect(snakeFood.x*tileSize, snakeFood.y*tileSize, tileSize,tileSize);
+        g.fillRect(snakeFood.x * tileSize, snakeFood.y * tileSize, tileSize, tileSize);
 
-        //snake
+        // snake head
         g.setColor(Color.WHITE);
-        g.fillRect(snakeHead.x*tileSize, snakeHead.y*tileSize, tileSize,tileSize);
+        g.fillRect(snakeHead.x * tileSize, snakeHead.y * tileSize, tileSize, tileSize);
 
-        //snakebody
-        for (int i = 0; i < snakeBody.size(); i++) {
-            Tile snakeBodyTile = snakeBody.get(i);
+        // snake body
+        for (Tile snakeBodyTile : snakeBody) {
             g.setColor(Color.green);
-            g.fillRect(snakeBodyTile.x*tileSize, snakeBodyTile.y*tileSize, tileSize, tileSize);
-
-
+            g.fillRect(snakeBodyTile.x * tileSize, snakeBodyTile.y * tileSize, tileSize, tileSize);
         }
 
-
+        // Display score in the top-left corner
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.drawString("Score: " + score, 10, 20);
     }
 
-    public void putFood(){
-        snakeFood.x = rand.nextInt(boardWidth/tileSize); //randomly assign food position
-        snakeFood.y = rand.nextInt(boardHeight/tileSize);
+    public void putFood() {
+        snakeFood.x = rand.nextInt(boardWidth / tileSize); //randomly assign food position
+        snakeFood.y = rand.nextInt(boardHeight / tileSize);
     }
-    public boolean eatFood(Tile tile1 , Tile tile2){
 
+    public boolean collide(Tile tile1, Tile tile2) { //normally it checks for food eat , may check for collision to snake also
         return tile1.x == tile2.x && tile1.y == tile2.y;
     }
 
-    public void move(){
+    public void gameOvercollide() {
+        for (Tile snakePart : snakeBody) { //game over condition
+            if (collide(snakePart, snakeHead)) {
+                gameOver = true;
+            }
+        }
+    }
 
-        if (eatFood(snakeFood, snakeHead)){
-            snakeBody.add(new Tile(snakeFood.x,snakeFood.y));
+    public void move() {
+        if (collide(snakeFood, snakeHead)) {
+            snakeBody.add(new Tile(snakeFood.x, snakeFood.y));
+            score += 10;
 
             putFood();
-            if (gameSpeed > 50) { // Minimum delay limit
+            if (gameSpeed > 150) { // Minimum delay limit
                 gameSpeed -= 100;
                 gameTimer.setDelay(gameSpeed); // Apply new delay to the timer
             }
         }
 
-        //snakebody  movement
-        for (int i = snakeBody.size()-1; i>=0 ; i--) {
+        // snake body movement
+        for (int i = snakeBody.size() - 1; i >= 0; i--) {
             Tile snakeBodyTile = snakeBody.get(i);
-            if(i == 0){
+            if (i == 0) {
                 snakeBodyTile.x = snakeHead.x;
                 snakeBodyTile.y = snakeHead.y;
-            }else {
-                Tile snakeBodyTileprev = snakeBody.get(i-1);
-                snakeBodyTile.x = snakeBodyTileprev.x;
-                snakeBodyTile.y = snakeBodyTileprev.y;
+            } else {
+                Tile prevTile = snakeBody.get(i - 1);
+                snakeBodyTile.x = prevTile.x;
+                snakeBodyTile.y = prevTile.y;
             }
-
         }
 
-        //snake head
+        // snake head
         snakeHead.x += velocityx; //increments movement
         snakeHead.y += velocityy;
+
+        gameOvercollide();
+        if (snakeHead.x < 0 || snakeHead.x >= boardWidth / tileSize || snakeHead.y < 0 || snakeHead.y >= boardHeight / tileSize) {
+            gameOver = true;
+        }
     }
+
+    public void showGameOver() {
+        gameOverScreen.setFinalScore(score); // Set final score
+        gameOverScreen.setSize(getSize()); // Match the game panel's size
+        add(gameOverScreen); // Add the GameOverScreen panel on top of the game screen
+        gameOverScreen.repaint(); // Refresh to show the game-over screen
+    } ///must copy for other games
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        move();
+        if (!gameOver) {
+            move();
+        } else {
+            gameTimer.stop();
+        }
         repaint(); //updates on display
     }
 
     @Override
-    public void keyPressed(KeyEvent e) { //need optimisation
-
-        if(e.getKeyCode() == KeyEvent.VK_LEFT && velocityx != 1){
-
+    public void keyPressed(KeyEvent e) { //need optimization
+        if (e.getKeyCode() == KeyEvent.VK_LEFT && velocityx != 1) {
             velocityx = -1;
             velocityy = 0;
-        } if(e.getKeyCode() == KeyEvent.VK_RIGHT && velocityx != -1){
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT && velocityx != -1) {
             velocityx = 1;
             velocityy = 0;
-        }if(e.getKeyCode() == KeyEvent.VK_UP && velocityy != 1){
+        }
+        if (e.getKeyCode() == KeyEvent.VK_UP && velocityy != 1) {
             velocityy = -1;
             velocityx = 0;
-        } if(e.getKeyCode() == KeyEvent.VK_DOWN && velocityy != -1){
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN && velocityy != -1) {
             velocityy = 1;
             velocityx = 0;
         }
-
     }
-
 
     //no use but don't remove else it dies
     @Override
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(KeyEvent e) {}
 
-    }
     @Override
-    public void keyTyped(KeyEvent e) {
-
-    }
+    public void keyTyped(KeyEvent e) {}
 }

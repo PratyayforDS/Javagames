@@ -5,7 +5,7 @@ import java.io.File;
 import javax.sound.sampled.*;
 
 public class AlphaGameScreen extends JPanel implements KeyListener, MouseListener {
-    private String[] menuOptions = {"Start Game", "Load Game", "Options", "Exit"};
+    private String[] menuOptions = {"Snake", "Load Game", "Options", "Exit"};
     private int selectedOption = 0; // Track the currently selected option
     private Font pixelFont;
     private JFrame parentFrame; // Reference to the parent frame

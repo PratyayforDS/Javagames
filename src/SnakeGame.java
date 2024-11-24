@@ -66,7 +66,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         gameOverScreen = new GameOverScreen(score);
 
         // Play background music
-        playBackgroundMusic("background_music.wav"); // Replace with actual file path
+        playBackgroundMusic("src/assets/snakegamebgm.wav");
     }
 
     public void paint(Graphics g) {
@@ -108,6 +108,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
             // Randomly assign food position, avoiding the top-left corner where the score is
             snakeFood.x = rand.nextInt(boardWidth / tileSize);
             snakeFood.y = rand.nextInt(boardHeight / tileSize);
+            System.out.println("food put at " + snakeFood.x * tileSize + ", " + snakeFood.y * tileSize);
         } while (snakeFood.y < scoreAreaHeight && snakeFood.x < scoreAreaWidth); // Ensure food is not in the score area
     }
 
@@ -251,6 +252,8 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(music);
             backgroundMusicClip = AudioSystem.getClip();
             backgroundMusicClip.open(audioIn);
+            FloatControl volumeControl = (FloatControl) backgroundMusicClip.getControl(FloatControl.Type.MASTER_GAIN);
+            volumeControl.setValue(-25.0f);
             backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Loop the background music
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();

@@ -148,7 +148,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         parentFrame.setTitle("Snake Game 🐍");
         parentFrame.getContentPane().removeAll();
 
-        SnakeGame snakeGame = new SnakeGame(800, 600);
+        SnakeGame snakeGame = new SnakeGame(790, 590);
         parentFrame.add(snakeGame);
 
         snakeGame.setFocusable(true);

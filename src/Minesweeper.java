@@ -10,6 +10,9 @@ import javax.sound.sampled.*;
 import java.io.File;
 
 public class Minesweeper {
+    Timer gameTimer;
+    int secondsElapsed = 0;
+    private Clip backgroundMusicClip;
 
     public class MineTile extends JButton{
         int r,c;
@@ -40,88 +43,91 @@ public class Minesweeper {
     boolean gameOver=false;
 
     Minesweeper() {
-//        frame.setVisible(true);
-        frame.setSize(boardWidth,boardHeight);
+        playBackgroundMusic();
+        frame.setSize(boardWidth, boardHeight);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
-        textLabel.setFont(new Font ("Arial",Font.BOLD,25));
+        textLabel.setFont(new Font("Arial", Font.BOLD, 25));
         textLabel.setHorizontalAlignment(JLabel.CENTER);
-//        textLabel.setText(("Minesweeper"));
-        textLabel.setText(("Minesweeper: "+ Integer.toString(mineCount)));
+        textLabel.setText("Minesweeper: " + mineCount + " | Time: 0");
         textLabel.setOpaque(true);
 
         textPanel.setLayout(new BorderLayout());
         textPanel.add(textLabel);
-        frame.add(textPanel,BorderLayout.NORTH);
+        frame.add(textPanel, BorderLayout.NORTH);
 
-        boardPanel.setLayout(new GridLayout(numRows,numCols));
+        boardPanel.setLayout(new GridLayout(numRows, numCols));
         boardPanel.setBackground(Color.GREEN);
         frame.add(boardPanel);
 
-        for(int r=0;r<numRows;r++){
-            for(int c=0;c<numCols;c++){
-             MineTile tile = new MineTile(r,c);
-             board[r][c] =tile;
+        for (int r = 0; r < numRows; r++) {
+            for (int c = 0; c < numCols; c++) {
+                MineTile tile = new MineTile(r, c);
+                board[r][c] = tile;
 
-             tile.setFocusable(false);
-             tile.setMargin(new Insets(0,0,0,0));
-             tile.setFont(new Font("Arial Unicode MS",Font.PLAIN,45));
-//             tile.setText("💣");
-                //im gonna change something here
-             tile.addMouseListener(new MouseAdapter() {
-                 @Override
-                 public void mousePressed(MouseEvent e){
-                     if(gameOver){
-                         return;
-                     }
-                     MineTile tile=(MineTile) e.getSource();
+                tile.setFocusable(false);
+                tile.setMargin(new Insets(0, 0, 0, 0));
+                tile.setFont(new Font("Arial Unicode MS", Font.PLAIN, 45));
+                tile.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        if (gameOver) {
+                            return;
+                        }
+                        MineTile tile = (MineTile) e.getSource();
 
-                     //left click
-                     if(e.getButton() == MouseEvent.BUTTON1){
-                         playSound("src/assets/tap-notification-180637.wav");
-                        if(Objects.equals(tile.getText(), "")){
-                            if(mineList.contains(tile)){
-                                revealMines();
+                        if (e.getButton() == MouseEvent.BUTTON1) {
+                            playSound("src/assets/tap-notification-180637.wav");
+                            if (Objects.equals(tile.getText(), "")) {
+                                if (mineList.contains(tile)) {
+                                    revealMines();
+                                    gameTimer.stop(); // Stop timer on game over
+                                } else {
+                                    checkMIne(tile.r, tile.c);
+                                }
                             }
-                            else{
-                                checkMIne(tile.r,tile.c);
+                        } else if (e.getButton() == MouseEvent.BUTTON3) {
+                            playSound("src/assets/flag2.wav");
+                            if (Objects.equals(tile.getText(), "") && tile.isEnabled()) {
+                                tile.setText("🚩");
+                            } else if (Objects.equals(tile.getText(), "🚩")) {
+                                tile.setText("");
                             }
                         }
-                     }
-                     else if (e.getButton()==MouseEvent.BUTTON3){
-                         if(Objects.equals(tile.getText(), "") && tile.isEnabled()){
-                             tile.setText(("🚩"));
-                         }
-                         else if(Objects.equals(tile.getText(), "🚩")){
-                             tile.setText("");
-                         }
-                     }
-                 }
-             });
-             boardPanel.add(tile);
+                    }
+                });
+                boardPanel.add(tile);
             }
         }
 
         frame.setVisible(true);
-
         setMines();
+
+        // Initialize and start the game timer
+        gameTimer = new Timer(1000, e -> {
+            secondsElapsed++;
+            textLabel.setText("Minesweeper: " + mineCount + " | Time: " + secondsElapsed);
+        });
+        gameTimer.start();
     }
 
-//    private void playBackgroundMusic() {
-//        try {
-//            // Load a background music file (adjust the path as needed)
-//            AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File("src/assets/1-03. Professor Oak.wav")); //use wav only
-//            backgroundMusicClip = AudioSystem.getClip();
-//            backgroundMusicClip.open(audioStream);
-//            backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Play the sound in a loop
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.out.println("Error loading or playing background music.");
-//        }
-//    }
+    private void playBackgroundMusic() {
+        try {
+            // Load a background music file (adjust the path as needed)
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File("src/assets/minebgm.wav")); //use wav only
+            backgroundMusicClip = AudioSystem.getClip();
+            backgroundMusicClip.open(audioStream);
+            FloatControl volumeControl = (FloatControl) backgroundMusicClip.getControl(FloatControl.Type.MASTER_GAIN);
+            volumeControl.setValue(-10.0f);
+            backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Play the sound in a loop
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error loading or playing background music.");
+        }
+    }
 
     void setMines(){
         mineList=new ArrayList<MineTile>();
@@ -138,18 +144,6 @@ public class Minesweeper {
         }
 
     }
-
-
-    void revealMines(){
-        //did a bit pakami in this function.
-        for (MineTile tile : mineList) {
-            tile.setText("💣");
-        }
-        playSound("src/assets/explosion.wav");
-        gameOver=true;
-        textLabel.setText("Game Over");
-    }
-
     private void playSound(String soundFile) {
         try {
             File file = new File(soundFile);
@@ -161,49 +155,69 @@ public class Minesweeper {
             System.err.println("Error playing sound: " + e.getMessage());
         }
     }
-    void checkMIne(int r, int c){
-        if(r<0 ||r>=numRows||c<0||c>=numCols){
+
+    void revealMines() {
+        for (MineTile tile : mineList) {
+            tile.setText("💣");
+        }
+        playSound("src/assets/explosion.wav");
+        backgroundMusicClip.stop();
+
+        gameOver = true;
+        gameTimer.stop(); // Stop the timer
+
+        // Show Game Over screen
+        showEndScreenWithDelay("Game Over",1000);
+    }
+
+
+    void checkMIne(int r, int c) {
+        if (r < 0 || r >= numRows || c < 0 || c >= numCols) {
             return;
         }
         MineTile tile = board[r][c];
-        if (!tile.isEnabled()){
+        if (!tile.isEnabled()) {
             return;
         }
         tile.setEnabled(false);
-        tilesClicked+=1;
-        int minesFound=0;
+        tilesClicked++;
+        int minesFound = 0;
 
-        //top3
-        minesFound +=countMine(r-1,c-1); //top left
-        minesFound +=countMine(r-1,c); //top
-        minesFound +=countMine(r-1,c+1); //top right
-        minesFound +=countMine(r,c-1);//left
-        minesFound +=countMine(r,c+1);//right
-        minesFound +=countMine(r+1,c-1);//bottom left
-        minesFound +=countMine(r+1,c);//bottom
-        minesFound +=countMine(r+1,c+1);//bottom right
+        // Check surrounding tiles
+        minesFound += countMine(r - 1, c - 1);
+        minesFound += countMine(r - 1, c);
+        minesFound += countMine(r - 1, c + 1);
+        minesFound += countMine(r, c - 1);
+        minesFound += countMine(r, c + 1);
+        minesFound += countMine(r + 1, c - 1);
+        minesFound += countMine(r + 1, c);
+        minesFound += countMine(r + 1, c + 1);
 
-        if (minesFound >0){
+        if (minesFound > 0) {
             tile.setText(Integer.toString(minesFound));
-        }
-        else{
+        } else {
             tile.setText("");
-            //top3
-            checkMIne(r-1,c-1);
-            checkMIne(r-1,c);
-            checkMIne(r-1,c+1);
-            checkMIne(r,c-1);
-            checkMIne(r,c+1);
-            checkMIne(r+1,c-1);
-            checkMIne(r+1,c);
-            checkMIne(r+1,c+1);
+            checkMIne(r - 1, c - 1);
+            checkMIne(r - 1, c);
+            checkMIne(r - 1, c + 1);
+            checkMIne(r, c - 1);
+            checkMIne(r, c + 1);
+            checkMIne(r + 1, c - 1);
+            checkMIne(r + 1, c);
+            checkMIne(r + 1, c + 1);
         }
 
-        if (tilesClicked == numRows * numCols -mineList.size()){
-            gameOver=true;
-            textLabel.setText("Mines Cleared");
+        if (tilesClicked == numRows * numCols - mineList.size()) {
+            gameOver = true;
+            gameTimer.stop(); // Stop the timer
+            backgroundMusicClip.stop();
+            playSound("src/assets/winner.wav");
+            // Show Winner screen
+            showEndScreenWithDelay("You Win!",2800);
         }
+
     }
+
 
     int countMine(int r,int c){
         if(r<0 ||r>=numRows||c<0||c>=numCols){
@@ -214,4 +228,44 @@ public class Minesweeper {
         }
         return 0;
     }
+
+    private void showEndScreenWithDelay(String message,int time) {
+        // Create a Timer to delay the execution
+        Timer delayTimer = new Timer(time, e -> {
+            // Show the end screen after 3 seconds
+            showEndScreen(message);
+        });
+        delayTimer.setRepeats(false); // Ensure it runs only once
+        delayTimer.start();
+    }
+
+    private void showEndScreen(String message) {
+        // Remove existing components
+        frame.getContentPane().removeAll();
+
+        // Create a new panel for the end screen
+        JPanel endPanel = new JPanel();
+        endPanel.setLayout(new BorderLayout());
+        endPanel.setBackground(Color.BLACK);
+
+        // Add the end game message
+        JLabel endMessage = new JLabel(message, JLabel.CENTER);
+        endMessage.setFont(new Font("Arial", Font.BOLD, 40));
+        endMessage.setForeground(Color.WHITE);
+        endPanel.add(endMessage, BorderLayout.CENTER);
+
+        // Add the final time
+        JLabel timeMessage = new JLabel("Time: " + secondsElapsed + " seconds", JLabel.CENTER);
+        timeMessage.setFont(new Font("Arial", Font.PLAIN, 30));
+        timeMessage.setForeground(Color.YELLOW);
+        endPanel.add(timeMessage, BorderLayout.SOUTH);
+
+        // Add the end panel to the frame
+        frame.add(endPanel);
+
+        // Refresh the frame
+        frame.revalidate();
+        frame.repaint();
+    }
+
 }

@@ -1,3 +1,5 @@
+import Tetris.Tetris;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -5,7 +7,7 @@ import java.io.File;
 import javax.sound.sampled.*;
 
 public class AlphaGameScreen extends JPanel implements KeyListener, MouseListener {
-    private String[] menuOptions = {"Start Game", "Load Game", "Options", "Exit"};
+    private String[] menuOptions = {"Start Game", "Load Game", "Tetris", "Exit"};
     private int selectedOption = 0; // Track the currently selected option
     private Font pixelFont;
     private JFrame parentFrame; // Reference to the parent frame
@@ -126,7 +128,8 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
             stopBackgroundMusic(); // Stop the music when transitioning to the game
             loadMinesweeperGame();
         } else if (option == 2) {
-            JOptionPane.showMessageDialog(this, "Options coming soon!");
+            stopBackgroundMusic();
+            loadTetris();
         } else if (option == 3) {
             stopBackgroundMusic(); // Stop the music when exiting
             System.exit(0);
@@ -156,6 +159,15 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
 
         parentFrame.revalidate();
         parentFrame.repaint();
+    }
+
+    private void loadTetris(){
+
+        parentFrame.dispose();
+
+        var game = new Tetris();
+        game.setVisible(true);
+
     }
 
     // Unused event methods

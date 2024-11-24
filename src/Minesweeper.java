@@ -1,11 +1,13 @@
 import  java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 import javax.swing.*;
 import java.util.Random;
-
+import javax.sound.sampled.*;
+import java.io.File;
 
 public class Minesweeper {
 
@@ -79,6 +81,7 @@ public class Minesweeper {
 
                      //left click
                      if(e.getButton() == MouseEvent.BUTTON1){
+                         playSound("src/assets/tap-notification-180637.wav");
                         if(Objects.equals(tile.getText(), "")){
                             if(mineList.contains(tile)){
                                 revealMines();
@@ -107,6 +110,19 @@ public class Minesweeper {
         setMines();
     }
 
+//    private void playBackgroundMusic() {
+//        try {
+//            // Load a background music file (adjust the path as needed)
+//            AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File("src/assets/1-03. Professor Oak.wav")); //use wav only
+//            backgroundMusicClip = AudioSystem.getClip();
+//            backgroundMusicClip.open(audioStream);
+//            backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Play the sound in a loop
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.out.println("Error loading or playing background music.");
+//        }
+//    }
+
     void setMines(){
         mineList=new ArrayList<MineTile>();
         int mineLeft = mineCount;
@@ -129,10 +145,22 @@ public class Minesweeper {
         for (MineTile tile : mineList) {
             tile.setText("💣");
         }
+        playSound("src/assets/explosion.wav");
         gameOver=true;
         textLabel.setText("Game Over");
     }
 
+    private void playSound(String soundFile) {
+        try {
+            File file = new File(soundFile);
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioStream);
+            clip.start();
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+            System.err.println("Error playing sound: " + e.getMessage());
+        }
+    }
     void checkMIne(int r, int c){
         if(r<0 ||r>=numRows||c<0||c>=numCols){
             return;

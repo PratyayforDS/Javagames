@@ -7,7 +7,7 @@ import java.io.File;
 import javax.sound.sampled.*;
 
 public class AlphaGameScreen extends JPanel implements KeyListener, MouseListener {
-    private String[] menuOptions = {"Start Game", "Load Game", "Tetris", "Exit"};
+    private String[] menuOptions = {"Snake", "Load Game", "Tetris", "Exit"};
     private int selectedOption = 0; // Track the currently selected option
     private Font pixelFont;
     private JFrame parentFrame; // Reference to the parent frame
@@ -138,17 +138,24 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
 
     private void startSnakeGame() {
         parentFrame.setTitle("Snake Game 🐍");
+
+        // Remove all components and set layout to null to ensure proper resizing
         parentFrame.getContentPane().removeAll();
+        parentFrame.setLayout(new BorderLayout());
 
-        SnakeGame snakeGame = new SnakeGame(800, 600);
-        parentFrame.add(snakeGame);
+        // Initialize and add the SnakeGame panel
+        SnakeGame snakeGame = new SnakeGame(800, 600); // Ensure this constructor accepts width and height
+        parentFrame.add(snakeGame, BorderLayout.CENTER); // Add to center for automatic resizing
 
+        // Ensure the SnakeGame component is focusable
         snakeGame.setFocusable(true);
         snakeGame.requestFocusInWindow();
 
+        // Pack or revalidate and repaint the parent frame to apply changes
         parentFrame.revalidate();
         parentFrame.repaint();
     }
+
 
     private void loadMinesweeperGame() {
         // Close the AlphaGameScreen by removing its components

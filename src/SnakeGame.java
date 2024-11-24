@@ -234,6 +234,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     private void playSound(String soundFile) {
         try {
             File sound = new File(soundFile);
+
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(sound);
             Clip clip = AudioSystem.getClip();
             clip.open(audioIn);

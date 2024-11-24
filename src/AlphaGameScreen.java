@@ -5,7 +5,7 @@ import java.io.File;
 import javax.sound.sampled.*;
 
 public class AlphaGameScreen extends JPanel implements KeyListener, MouseListener {
-    private String[] menuOptions = {"Start Game", "Load Game", "Options", "Exit"};
+    private String[] menuOptions = {"Start Game", "Load Game", "Options","Sudoku", "Exit"};
     private int selectedOption = 0; // Track the currently selected option
     private Font pixelFont;
     private JFrame parentFrame; // Reference to the parent frame
@@ -128,7 +128,11 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         } else if (option == 2) {
             JOptionPane.showMessageDialog(this, "Options coming soon!");
         } else if (option == 3) {
-            stopBackgroundMusic(); // Stop the music when exiting
+            stopBackgroundMusic(); // Stop the music when exiting;
+            loadSudoku();
+            System.out.println("DOne");
+
+        } else if (option ==4){
             System.exit(0);
         }
     }
@@ -157,6 +161,31 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         parentFrame.revalidate();
         parentFrame.repaint();
     }
+
+//    private void loadSudoku() {
+//        // Close the AlphaGameScreen by removing its components
+////        parentFrame.dispose();
+//        // Add the Minesweeper GUI to the parent frame
+//        SudokuGame sudoku = new SudokuGame();
+////        parentFrame.add(sudoku.frame);  // Add the full Minesweeper frame
+//
+//        parentFrame.revalidate();
+//        parentFrame.repaint();
+//    }
+
+    private void loadSudoku() {
+        stopBackgroundMusic();
+
+        // Create a new instance of SudokuGame and make it visible
+        SwingUtilities.invokeLater(() -> {
+            SudokuGame sudoku = new SudokuGame();
+            sudoku.setVisible(true);
+        });
+
+        // Optionally, hide the current frame
+        parentFrame.setVisible(false);
+    }
+
 
     // Unused event methods
     @Override

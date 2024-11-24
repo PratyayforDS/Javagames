@@ -1,3 +1,5 @@
+import Tetris.Tetris;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -126,7 +128,8 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
             stopBackgroundMusic(); // Stop the music when transitioning to the game
             loadMinesweeperGame();
         } else if (option == 2) {
-            JOptionPane.showMessageDialog(this, "Options coming soon!");
+            stopBackgroundMusic();
+            loadTetris();
         } else if (option == 3) {
             stopBackgroundMusic(); // Stop the music when exiting
             System.exit(0);
@@ -156,6 +159,15 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
 
         parentFrame.revalidate();
         parentFrame.repaint();
+    }
+
+    private void loadTetris(){
+
+        parentFrame.dispose();
+
+        var game = new Tetris();
+        game.setVisible(true);
+
     }
 
     // Unused event methods

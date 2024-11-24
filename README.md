@@ -7,7 +7,6 @@ Alpha Game System is a Java-based game menu system that allows users to select a
 - 🎮 Customizable game menu with multiple game options
 - 🎵 Background music that plays while the menu is displayed
 - 🔄 Smooth transitions between different game screens
-- 🔒 Non-resizable game window
 
 ## 🛠️ Installation
 

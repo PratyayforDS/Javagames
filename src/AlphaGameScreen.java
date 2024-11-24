@@ -38,7 +38,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
     private void playBackgroundMusic() {
         try {
             // Load a background music file (adjust the path as needed)
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File("src/assets/1-03. Professor Oak.wav")); //use wav only
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File("src/assets/MainTheme.wav")); //use wav only
             backgroundMusicClip = AudioSystem.getClip();
             backgroundMusicClip.open(audioStream);
             backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Play the sound in a loop
@@ -64,9 +64,9 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
 
         // Draw hills
         g.setColor(Color.GREEN);
-        g.fillOval(50, getHeight() - 150, 200, 100); // Small hill
-        g.fillOval(300, getHeight() - 200, 300, 150); // Large hill
-        g.fillOval(650, getHeight() - 150, 200, 100); // Small hill
+        g.fillOval(10, getHeight() - 120, 180, 90); // Small hill
+        g.fillOval(255, getHeight() - 170, 280, 140); // Large hill
+        g.fillOval(595, getHeight() - 120, 180, 90); // Small hill
 
         // Title Banner
         g.setColor(Color.RED);
@@ -75,9 +75,9 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         g.setFont(pixelFont); // Set custom pixel font
 
         // Shadow text for title
-        g.drawString("ALPHA GAME SYSTEM", 130, 120);
+        g.drawString("ALPHA GAME SYSTEM", 190, 120);
         g.setColor(Color.WHITE);
-        g.drawString("ALPHA GAME SYSTEM", 128, 118);
+        g.drawString("ALPHA GAME SYSTEM", 188, 118);
 
         // Menu Options
         for (int i = 0; i < menuOptions.length; i++) {
@@ -137,7 +137,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         } else if (option == 3) {
             stopBackgroundMusic(); // Stop the music when exiting;
             loadSudoku();
-            System.out.println("DOne");
+            System.out.println("Done");
 
         } else if (option ==4){
             System.exit(0);
@@ -205,6 +205,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
         frame.setVisible(true);
     }
 }

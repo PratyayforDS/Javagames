@@ -1,5 +1,3 @@
-import Tetris.Tetris;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -7,7 +5,7 @@ import java.io.File;
 import javax.sound.sampled.*;
 
 public class AlphaGameScreen extends JPanel implements KeyListener, MouseListener {
-    private String[] menuOptions = {"Snake", "Load Game", "Tetris", "Exit"};
+    private String[] menuOptions = {"Snake", "Load Game", "Tetris", "Sudoku", "Exit"};
     private int selectedOption = 0; // Track the currently selected option
     private Font pixelFont;
     private JFrame parentFrame; // Reference to the parent frame
@@ -128,34 +126,30 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
             stopBackgroundMusic(); // Stop the music when transitioning to the game
             loadMinesweeperGame();
         } else if (option == 2) {
-            stopBackgroundMusic();
-            loadTetris();
+            JOptionPane.showMessageDialog(this, "Options coming soon!");
         } else if (option == 3) {
-            stopBackgroundMusic(); // Stop the music when exiting
+            stopBackgroundMusic(); // Stop the music when exiting;
+            loadSudoku();
+            System.out.println("DOne");
+
+        } else if (option ==4){
             System.exit(0);
         }
     }
 
     private void startSnakeGame() {
         parentFrame.setTitle("Snake Game 🐍");
-
-        // Remove all components and set layout to null to ensure proper resizing
         parentFrame.getContentPane().removeAll();
-        parentFrame.setLayout(new BorderLayout());
 
-        // Initialize and add the SnakeGame panel
-        SnakeGame snakeGame = new SnakeGame(800, 600); // Ensure this constructor accepts width and height
-        parentFrame.add(snakeGame, BorderLayout.CENTER); // Add to center for automatic resizing
+        SnakeGame snakeGame = new SnakeGame(800, 600);
+        parentFrame.add(snakeGame);
 
-        // Ensure the SnakeGame component is focusable
         snakeGame.setFocusable(true);
         snakeGame.requestFocusInWindow();
 
-        // Pack or revalidate and repaint the parent frame to apply changes
         parentFrame.revalidate();
         parentFrame.repaint();
     }
-
 
     private void loadMinesweeperGame() {
         // Close the AlphaGameScreen by removing its components
@@ -168,13 +162,18 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         parentFrame.repaint();
     }
 
-    private void loadTetris(){
+    private void loadSudoku() {
+        // Stop the background music when switching to Sudoku
+        stopBackgroundMusic();
 
-        parentFrame.dispose();
+        // Create a new instance of SudokuGame and make it visible
+        SwingUtilities.invokeLater(() -> {
+            SudokuGame sudoku = new SudokuGame();
+            sudoku.setVisible(true);
+        });
 
-        var game = new Tetris();
-        game.setVisible(true);
-
+        // Optionally, hide the current frame
+        parentFrame.setVisible(false);
     }
 
     // Unused event methods

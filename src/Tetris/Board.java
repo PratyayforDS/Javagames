@@ -9,11 +9,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
+
+
 public class Board extends JPanel {
 
     private final int BOARD_WIDTH = 10;
     private final int BOARD_HEIGHT = 22;
-    private final int PERIOD_INTERVAL = 300;
+    private final int PERIOD_INTERVAL = 400;
 
     private Timer timer;
     private boolean isFallingFinished = false;
@@ -24,6 +29,28 @@ public class Board extends JPanel {
     private JLabel statusbar;
     private Shape curPiece;
     private Tetrominoe[] board;
+    private Color backgroundColor = Color.BLACK;
+
+    private Clip backgroundMusic;
+
+    private void playBackgroundMusic(String filePath) {
+        try {
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File(filePath));
+            backgroundMusic = AudioSystem.getClip();
+            backgroundMusic.open(audioStream);
+            backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopBackgroundMusic() {
+        if (backgroundMusic != null && backgroundMusic.isRunning()) {
+            backgroundMusic.stop();
+        }
+    }
+
+
 
     public Board(Tetris parent) {
 
@@ -54,6 +81,8 @@ public class Board extends JPanel {
 
     void start() {
 
+        playBackgroundMusic("src/assets/minesweeperbgm.wav");
+
         curPiece = new Shape();
         board = new Tetrominoe[BOARD_WIDTH * BOARD_HEIGHT];
 
@@ -83,6 +112,7 @@ public class Board extends JPanel {
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
+        setBackground(backgroundColor);
         doDrawing(g);
     }
 

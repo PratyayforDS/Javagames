@@ -204,7 +204,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        playSound("assets/keypressing.wav"); // Replace with actual file path
+        playkeySound("src/assets/keypresssnk.wav"); // Replace with actual file path
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT && velocityx != 1) {
             velocityx = -1;
@@ -244,6 +244,23 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
             e.printStackTrace();
         }
     }
+    private void playkeySound(String soundFile) {
+        try {
+            File sound = new File(soundFile);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(sound);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+
+            // Adjust the volume of the keypress sound
+            FloatControl volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            volumeControl.setValue(-15.0f); // Set the volume lower (e.g., -15 dB)
+
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     // Method to play background music
     private void playBackgroundMusic(String musicFile) {
@@ -253,7 +270,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
             backgroundMusicClip = AudioSystem.getClip();
             backgroundMusicClip.open(audioIn);
             FloatControl volumeControl = (FloatControl) backgroundMusicClip.getControl(FloatControl.Type.MASTER_GAIN);
-            volumeControl.setValue(-25.0f);
+            volumeControl.setValue(-20.0f);
             backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Loop the background music
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();

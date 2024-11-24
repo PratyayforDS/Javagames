@@ -5,7 +5,7 @@ import java.io.File;
 import javax.sound.sampled.*;
 
 public class AlphaGameScreen extends JPanel implements KeyListener, MouseListener {
-    private String[] menuOptions = {"Snake", "Load Game", "Tetris", "Exit"};
+    private String[] menuOptions = {"Snake", "Load Game", "Tetris", "Sudoku", "Exit"};
     private int selectedOption = 0; // Track the currently selected option
     private Font pixelFont;
     private JFrame parentFrame; // Reference to the parent frame
@@ -160,6 +160,20 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
 
         parentFrame.revalidate();
         parentFrame.repaint();
+    }
+
+    private void loadSudoku() {
+        // Stop the background music when switching to Sudoku
+        stopBackgroundMusic();
+
+        // Create a new instance of SudokuGame and make it visible
+        SwingUtilities.invokeLater(() -> {
+            SudokuGame sudoku = new SudokuGame();
+            sudoku.setVisible(true);
+        });
+
+        // Optionally, hide the current frame
+        parentFrame.setVisible(false);
     }
 
     // Unused event methods

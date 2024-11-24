@@ -179,6 +179,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         frame.add(screen);
         frame.setSize(800, 600);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 }

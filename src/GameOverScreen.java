@@ -1,10 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
-//must see at last
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 
 public class GameOverScreen extends JPanel {
 
     private int finalScore;
+    private boolean soundPlayed = false;  // Flag to ensure sound is only played once
 
     // Constructor to set the final score
     public GameOverScreen(int finalScore) {
@@ -12,9 +15,30 @@ public class GameOverScreen extends JPanel {
         setOpaque(false); // Allows underlying game screen to show through if needed
     }
 
+    // Method to load and play the game-over sound
+    private void playGameOverSound() {
+        if (!soundPlayed) {
+            try {
+                // Replace with the correct path to your sound file
+                File soundFile = new File("src/assets/game-over-arcade-6435.wav");
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioIn);
+                clip.start();  // Play the sound
+
+                soundPlayed = true;  // Set the flag to true so the sound is played only once
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                e.printStackTrace(); // Handle any exceptions that occur
+            }
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        // Play the sound when the screen is first drawn
+        playGameOverSound();
 
         // Set color and font for "Game Over" text
         g.setColor(Color.white);
@@ -44,16 +68,3 @@ public class GameOverScreen extends JPanel {
         repaint();
     }
 }
-//how to use this gameover screen
-
-//private GameOverScreen gameOverScreen;
-// in starting of your game class
-
-//then implement this method also in your game logic
-
-//public void showGameOver() {
-//    gameOverScreen.setFinalScore(score); // Set final score
-//    gameOverScreen.setSize(getSize()); // Match the game panel's size
-//    add(gameOverScreen); // Add the GameOverScreen panel on top of the game screen
-//    gameOverScreen.repaint(); // Refresh to show the game-over screen
-//} ///must copy for other games

@@ -3,6 +3,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 
 public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     int gameSpeed = 750;
@@ -34,6 +37,9 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     // Game Over screen
     private GameOverScreen gameOverScreen;
 
+    // Clip for background music
+    private Clip backgroundMusicClip;
+
     SnakeGame(int boardWidth, int boardHeight) { //snake game constructor
         this.boardHeight = boardHeight;
         this.boardWidth = boardWidth;
@@ -58,6 +64,9 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
 
         // Initialize GameOverScreen (but don't add it to the frame yet)
         gameOverScreen = new GameOverScreen(score);
+
+        // Play background music
+        playBackgroundMusic("background_music.wav"); // Replace with actual file path
     }
 
     public void paint(Graphics g) {
@@ -80,7 +89,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         // snake body
         for (Tile snakeBodyTile : snakeBody) {
             g.setColor(Color.green);
-            g.drawRoundRect(snakeBodyTile.x * tileSize, snakeBodyTile.y * tileSize, tileSize, tileSize,10,10);
+            g.drawRoundRect(snakeBodyTile.x * tileSize, snakeBodyTile.y * tileSize, tileSize, tileSize, 10, 10);
         }
 
         // Display score in the top-left corner
@@ -124,6 +133,9 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
                 gameSpeed -= 100;
                 gameTimer.setDelay(gameSpeed); // Apply new delay to the timer
             }
+
+            // Play sound when food is eaten
+            playSound("src/assets/apple-crunch-215258_wqAxfUZg.wav"); // Replace with actual file path
         }
 
         // snake body movement
@@ -154,6 +166,12 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         gameOverScreen.setSize(getSize()); // Match the game panel's size
         add(gameOverScreen); // Add the GameOverScreen panel on top of the game screen
         gameOverScreen.repaint(); // Refresh to show the game-over screen
+
+        // Stop background music when the game ends
+        stopBackgroundMusic();
+
+        // Play game over sound when the game ends
+        //playSound("src/assets/game-over-arcade-6435.wav");
     }
 
     // Method to draw an apple instead of a frog
@@ -184,7 +202,9 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent e) { //need optimization
+    public void keyPressed(KeyEvent e) {
+        playSound("assets/keypressing.wav"); // Replace with actual file path
+
         if (e.getKeyCode() == KeyEvent.VK_LEFT && velocityx != 1) {
             velocityx = -1;
             velocityy = 0;
@@ -209,4 +229,37 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {}
+
+    // Method to play sound
+    private void playSound(String soundFile) {
+        try {
+            File sound = new File(soundFile);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(sound);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Method to play background music
+    private void playBackgroundMusic(String musicFile) {
+        try {
+            File music = new File(musicFile);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(music);
+            backgroundMusicClip = AudioSystem.getClip();
+            backgroundMusicClip.open(audioIn);
+            backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Loop the background music
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Stop background music
+    private void stopBackgroundMusic() {
+        if (backgroundMusicClip != null && backgroundMusicClip.isRunning()) {
+            backgroundMusicClip.stop();
+        }
+    }
 }

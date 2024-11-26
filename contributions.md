@@ -7,7 +7,7 @@ Below is a detailed breakdown of each team member’s contributions and an expan
 
 ## 📜 **Primary Contributions**
 
-### 🚀 **Adityacyan**
+### 🚀 **adityacyan**
 #### **Feature Additions:**
 - Designed and implemented the **menu home screen** for smooth navigation.
 - Added **sound effects** to enhance the menu's interactivity.
@@ -77,7 +77,7 @@ Below is a detailed breakdown of each team member’s contributions and an expan
 
 ---
 
-## 📅 **Development Timeline: Expanded**
+## 📅 **Development Timeline:**
 
 Here is a detailed timeline of the major contributions and milestones achieved during the project:
 

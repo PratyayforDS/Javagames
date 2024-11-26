@@ -12,7 +12,7 @@ Alpha Game System is a Java-based game menu system that allows users to select a
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/adityacyan/alpha-game-system.git
+    git clone https://github.com/adityacyan/Javagamesys.git
     ```
 2. Navigate to the project directory:
     ```sh

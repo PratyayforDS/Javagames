@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import javax.sound.sampled.*;
 
 public class AlphaGameScreen extends JPanel implements KeyListener, MouseListener {
@@ -12,7 +13,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
     private Font pixelFont;
     private JFrame parentFrame; // Reference to the parent frame
     private Clip backgroundMusicClip; // To hold the background music clip
-
+    private Clip traversalClip; //traversal
     public AlphaGameScreen(JFrame frame) {
         this.parentFrame = frame;
 
@@ -45,6 +46,26 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error loading or playing background music.");
+        }
+    }
+
+
+    // Method to play sound
+
+    private void playkeySound(String soundFile) {
+        try {
+            File sound = new File(soundFile);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(sound);
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+
+            // Adjust the volume of the keypress sound
+//            FloatControl volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+//            volumeControl.setValue(-15.0f); // Set the volume lower (e.g., -15 dB)
+
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
         }
     }
 
@@ -94,10 +115,13 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
 
     @Override
     public void keyPressed(KeyEvent e) {
+        playkeySound("src/assets/Pokemon (A Button) - Sound Effect (HD).wav");
         int keyCode = e.getKeyCode();
         if (keyCode == KeyEvent.VK_UP) {
+
             selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
         } else if (keyCode == KeyEvent.VK_DOWN) {
+
             selectedOption = (selectedOption + 1) % menuOptions.length;
         } else if (keyCode == KeyEvent.VK_ENTER) {
             handleMenuSelection(selectedOption);

@@ -30,7 +30,7 @@ public class Board extends JPanel {
     private Shape curPiece;
     private Tetrominoe[] board;
     private Color backgroundColor = Color.BLACK;
-
+    private GameOverScreenforTetris tetrisgameover;
     private Clip backgroundMusic;
 
     private void playBackgroundMusic(String filePath) {
@@ -88,7 +88,7 @@ public class Board extends JPanel {
 
         clearBoard();
         newPiece();
-
+        tetrisgameover = new GameOverScreenforTetris(numLinesRemoved);
         timer = new Timer(PERIOD_INTERVAL, new GameCycle());
         timer.start();
     }
@@ -107,8 +107,20 @@ public class Board extends JPanel {
 
         repaint();
     }
+    public void showGameOver() {
+        tetrisgameover.setFinalScore(numLinesRemoved); // Set final score
+        tetrisgameover.setSize(getSize()); // Match the game panel's size
+        add(tetrisgameover); // Add the GameOverScreen panel on top of the game screen
+        tetrisgameover.repaint(); // Refresh to show the game-over screen
 
-    @Override
+        // Stop background music when the game ends
+        stopBackgroundMusic();
+
+        // Play game over sound when the game ends
+        //playSound("src/assets/game-over-arcade-6435.wav");
+    }
+
+        @Override
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
@@ -210,8 +222,7 @@ public class Board extends JPanel {
             curPiece.setShape(Tetrominoe.NoShape);
             timer.stop();
 
-            var msg = String.format("Game over. Score: %d", numLinesRemoved);
-            statusbar.setText(msg);
+            showGameOver();
         }
     }
 

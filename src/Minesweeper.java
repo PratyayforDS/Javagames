@@ -33,6 +33,7 @@ public class Minesweeper {
     JLabel textLabel = new JLabel();
     JPanel textPanel = new JPanel();
     JPanel boardPanel =new JPanel();
+    JPanel controlPanel = new JPanel(); // New control panel for buttons
 
     int mineCount = 10;
     MineTile[][] board = new MineTile[numRows][numCols];
@@ -245,27 +246,106 @@ public class Minesweeper {
 
         // Create a new panel for the end screen
         JPanel endPanel = new JPanel();
-        endPanel.setLayout(new BorderLayout());
+        endPanel.setLayout(new GridBagLayout());
         endPanel.setBackground(Color.BLACK);
+
+        // Add the end game message
+        JPanel messagePanel = new JPanel();
+        messagePanel.setBackground(Color.BLACK);
+        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS)); // Vertical layout
 
         // Add the end game message
         JLabel endMessage = new JLabel(message, JLabel.CENTER);
         endMessage.setFont(new Font("Arial", Font.BOLD, 40));
         endMessage.setForeground(Color.WHITE);
-        endPanel.add(endMessage, BorderLayout.CENTER);
+        endMessage.setAlignmentX(Component.CENTER_ALIGNMENT); // Center alignment for BoxLayout
+        messagePanel.add(endMessage);
+
+        // Add spacing between the labels
+        messagePanel.add(Box.createVerticalStrut(10)); // Add vertical space between labels
 
         // Add the final time
         JLabel timeMessage = new JLabel("Time: " + secondsElapsed + " seconds", JLabel.CENTER);
         timeMessage.setFont(new Font("Arial", Font.PLAIN, 30));
         timeMessage.setForeground(Color.YELLOW);
-        endPanel.add(timeMessage, BorderLayout.SOUTH);
+        timeMessage.setAlignmentX(Component.CENTER_ALIGNMENT); // Center alignment for BoxLayout
+        messagePanel.add(timeMessage);
 
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.anchor = GridBagConstraints.CENTER; // Center alignment
+        gbc.fill = GridBagConstraints.NONE;
+
+        endPanel.add(messagePanel, gbc);
+
+        // Create buttons for Restart and Go Back
+        JPanel buttonPanel = getjPanel();
+        gbc.gridy = 1; // Place buttons below the messages
+        gbc.weighty = 0; // No extra vertical space for buttons
+        endPanel.add(buttonPanel, gbc);
         // Add the end panel to the frame
         frame.add(endPanel);
 
         // Refresh the frame
         frame.revalidate();
         frame.repaint();
+    }
+
+    private JPanel getjPanel() {
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.setLayout(new FlowLayout());
+
+        JButton restartButton = new JButton("Restart");
+        restartButton.setBackground(Color.GREEN); // Set the background color
+        restartButton.setForeground(Color.WHITE); // Set the text color
+        restartButton.setFont(new Font("SansSerif", Font.BOLD, 16)); // Optional: Change font
+        restartButton.setFocusPainted(false);
+
+
+        JButton backButton = new JButton("Menu");
+        backButton.setBackground(Color.RED); // Set the background color
+        backButton.setForeground(Color.WHITE); // Set the text color
+        backButton.setFont(new Font("SansSerif", Font.BOLD, 16)); // Optional: Change font
+        backButton.setFocusPainted(false); // Optional: Remove focus outline
+
+        restartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+
+
+        // Add functionality to Restart button
+        restartButton.addActionListener(e -> {
+            frame.dispose(); // Close the current frame
+            new Minesweeper(); // Restart the game
+        });
+
+        // Add functionality to Back button
+        backButton.addActionListener(e -> {
+            frame.dispose(); // Close the current frame
+            // Return to the game menu
+            SwingUtilities.invokeLater(() -> {
+                JFrame parentFrame = new JFrame("Alpha Game System");
+                AlphaGameScreen screen = new AlphaGameScreen(parentFrame);
+                parentFrame.add(screen);
+                parentFrame.setSize(800, 600);
+                parentFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                parentFrame.setLocationRelativeTo(null);
+                parentFrame.setResizable(false);
+                parentFrame.setVisible(true);
+            });
+        });
+
+//        buttonPanel.add(restartButton);
+//        buttonPanel.add(backButton);
+        buttonPanel.add(Box.createVerticalStrut(20)); // Add vertical spacing
+        buttonPanel.add(restartButton);
+        buttonPanel.add(Box.createVerticalStrut(10)); // Add spacing between buttons
+        buttonPanel.add(backButton);
+        return buttonPanel;
     }
 
 }

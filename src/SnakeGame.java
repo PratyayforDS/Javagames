@@ -253,7 +253,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
 
             // Adjust the volume of the keypress sound
             FloatControl volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            volumeControl.setValue(-15.0f); // Set the volume lower (e.g., -15 dB)
+            volumeControl.setValue(-10.0f); // Set the volume lower (e.g., -15 dB)
 
             clip.start();
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
@@ -270,7 +270,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
             backgroundMusicClip = AudioSystem.getClip();
             backgroundMusicClip.open(audioIn);
             FloatControl volumeControl = (FloatControl) backgroundMusicClip.getControl(FloatControl.Type.MASTER_GAIN);
-            volumeControl.setValue(-20.0f);
+            volumeControl.setValue(-10.0f);
             backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Loop the background music
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();

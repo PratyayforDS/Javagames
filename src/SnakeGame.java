@@ -40,9 +40,13 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     // Clip for background music
     private Clip backgroundMusicClip;
 
-    SnakeGame(int boardWidth, int boardHeight) { //snake game constructor
+    // Parent frame reference
+    private JFrame parentFrame;
+
+    SnakeGame(int boardWidth, int boardHeight, JFrame parentFrame) { //snake game constructor
         this.boardHeight = boardHeight;
         this.boardWidth = boardWidth;
+        this.parentFrame = parentFrame; // Initialize parent frame
         setPreferredSize(new Dimension(boardWidth, boardHeight));
         setBackground(Color.BLUE);
         addKeyListener(this);
@@ -63,7 +67,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         gameTimer.start();
 
         // Initialize GameOverScreen (but don't add it to the frame yet)
-        gameOverScreen = new GameOverScreen(score);
+        gameOverScreen = new GameOverScreen(score,parentFrame);
 
         // Play background music
         playBackgroundMusic("src/assets/snakegamebgm.wav");
@@ -163,10 +167,11 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     }
 
     public void showGameOver() {
+        parentFrame.getContentPane().removeAll(); // Clear the parent frame
         gameOverScreen.setFinalScore(score); // Set final score
-        gameOverScreen.setSize(getSize()); // Match the game panel's size
-        add(gameOverScreen); // Add the GameOverScreen panel on top of the game screen
-        gameOverScreen.repaint(); // Refresh to show the game-over screen
+        parentFrame.add(gameOverScreen); // Add the GameOverScreen to the parent frame
+        parentFrame.revalidate();
+        parentFrame.repaint();
 
         // Stop background music when the game ends
         stopBackgroundMusic();

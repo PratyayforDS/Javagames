@@ -1,5 +1,6 @@
 import Tetris.Tetris;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -144,7 +145,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
 
     private void handleMenuSelection(int option) {
         if (option == 0) {
-            // Start Game logic here
+            // Start Game logic here(snake)
             stopBackgroundMusic(); // Stop the music when transitioning to the game
             startSnakeGame();
         } else if (option == 1) {
@@ -172,7 +173,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         parentFrame.setTitle("Snake Game 🐍");
         parentFrame.getContentPane().removeAll();
 
-        SnakeGame snakeGame = new SnakeGame(790, 590);
+        SnakeGame snakeGame = new SnakeGame(790, 590,parentFrame);
         parentFrame.add(snakeGame);
 
         snakeGame.setFocusable(true);

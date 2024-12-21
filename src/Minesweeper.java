@@ -285,7 +285,7 @@ public class Minesweeper {
         JPanel buttonPanel = getjPanel();
         gbc.gridy = 1; // Place buttons below the messages
         gbc.weighty = 0; // No extra vertical space for buttons
-        endPanel.add(buttonPanel, gbc);
+       endPanel.add(buttonPanel, gbc);
         // Add the end panel to the frame
         frame.add(endPanel);
 
@@ -328,14 +328,7 @@ public class Minesweeper {
             frame.dispose(); // Close the current frame
             // Return to the game menu
             SwingUtilities.invokeLater(() -> {
-                JFrame parentFrame = new JFrame("Alpha Game System");
-                AlphaGameScreen screen = new AlphaGameScreen(parentFrame);
-                parentFrame.add(screen);
-                parentFrame.setSize(800, 600);
-                parentFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                parentFrame.setLocationRelativeTo(null);
-                parentFrame.setResizable(false);
-                parentFrame.setVisible(true);
+                AlphaGameScreen.main(new String[0]);
             });
         });
 

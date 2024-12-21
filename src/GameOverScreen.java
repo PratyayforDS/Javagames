@@ -4,67 +4,133 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
+
+
+
+
 public class GameOverScreen extends JPanel {
 
     private int finalScore;
-    private boolean soundPlayed = false;  // Flag to ensure sound is only played once
+    private boolean soundPlayed = false;
+    private JPanel endPanel;
+    private JFrame parentFrame; // Reference to the parent frame for restarting logic
 
-    // Constructor to set the final score
-    public GameOverScreen(int finalScore) {
+    public GameOverScreen(int finalScore, JFrame parentFrame) {
         this.finalScore = finalScore;
-        setOpaque(false); // Allows underlying game screen to show through if needed
+        this.parentFrame = parentFrame;
+
+        setOpaque(false);
+        endPanel = new JPanel();
+        endPanel.setLayout(new GridBagLayout());
+        endPanel.setBackground(Color.blue);
+
+        setLayout(new BorderLayout());
+        add(endPanel, BorderLayout.CENTER);
+
+        initUI();
     }
 
-    // Method to load and play the game-over sound
-    private void playGameOverSound() {
-        if (!soundPlayed) {
-            try {
-                // Replace with the correct path to your sound file
-                File soundFile = new File("src/assets/game-over-arcade-6435.wav");
-                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
-                Clip clip = AudioSystem.getClip();
-                clip.open(audioIn);
-                clip.start();  // Play the sound
+    private void initUI() {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-                soundPlayed = true;  // Set the flag to true so the sound is played only once
-            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                e.printStackTrace(); // Handle any exceptions that occur
-            }
-        }
+        // Add message panel
+        JPanel messagePanel = createMessagePanel();
+        endPanel.add(messagePanel, gbc);
+
+        // Add button panel
+        gbc.gridy = 1;
+        JPanel buttonPanel = createButtonPanel();
+        endPanel.add(buttonPanel, gbc);
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    private JPanel createMessagePanel() {
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
 
-        // Play the sound when the screen is first drawn
-        playGameOverSound();
+        JLabel gameOverLabel = new JLabel("GAME OVER");
+        gameOverLabel.setFont(new Font("Monospaced", Font.BOLD, 50));
+        gameOverLabel.setForeground(Color.WHITE);
 
-        // Set color and font for "Game Over" text
-        g.setColor(Color.white);
-        g.setFont(new Font("Monospaced", Font.BOLD, 50));
+        JLabel scoreLabel = new JLabel("Final Score: " + finalScore);
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        scoreLabel.setForeground(Color.WHITE);
 
-        String message = "GAME OVER";
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        gameOverLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        scoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Center the "Game Over" text
-        FontMetrics metrics = g.getFontMetrics(g.getFont());
-        int x = (getWidth() - metrics.stringWidth(message)) / 2;
-        int y = getHeight() / 2 - metrics.getHeight();
+        panel.add(gameOverLabel);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(scoreLabel);
 
-        g.drawString(message, x, y);
-
-        // Display the final score below the "Game Over" message
-        g.setFont(new Font("Arial", Font.BOLD, 30));
-        String scoreMessage = "Final Score: " + finalScore;
-        int scoreX = (getWidth() - g.getFontMetrics().stringWidth(scoreMessage)) / 2;
-        int scoreY = y + metrics.getHeight() + 40;
-
-        g.drawString(scoreMessage, scoreX, scoreY);
+        return panel;
     }
 
-    // Method to set the final score if it needs to be updated
-    public void setFinalScore(int score) {
-        this.finalScore = score;
+    private JPanel createButtonPanel() {
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.blue);
+
+        JButton restartButton = new JButton("Restart");
+        restartButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        restartButton.setBackground(Color.GREEN);
+        restartButton.setForeground(Color.WHITE);
+
+        JButton backButton = new JButton("Menu");
+        backButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        backButton.setBackground(Color.RED);
+        backButton.setForeground(Color.WHITE);
+
+        // Add functionality for Restart button
+        restartButton.addActionListener(e -> {
+            restartSnakeGame();
+        });
+
+        // Add functionality for Menu button
+        backButton.addActionListener(e -> {
+            goBackToMenu();
+        });
+
+        panel.add(restartButton);
+        panel.add(Box.createHorizontalStrut(10));
+        panel.add(backButton);
+
+        return panel;
+    }
+
+    private void restartSnakeGame() {
+        // Reset the frame and start the Snake game
+        parentFrame.getContentPane().removeAll();
+
+        SnakeGame snakeGame = new SnakeGame(790, 590,parentFrame);
+        parentFrame.add(snakeGame);
+
+        snakeGame.setFocusable(true);
+        snakeGame.requestFocusInWindow();
+
+        parentFrame.revalidate();
+        parentFrame.repaint();
+    }
+
+    private void goBackToMenu() {
+        // Go back to AlphaGameScreen
+        parentFrame.getContentPane().removeAll();
+
+        AlphaGameScreen alphaGameScreen = new AlphaGameScreen(parentFrame);
+        parentFrame.add(alphaGameScreen);
+
+        alphaGameScreen.setFocusable(true);
+        alphaGameScreen.requestFocusInWindow();
+
+        parentFrame.revalidate();
+        parentFrame.repaint();
+    }
+
+    // Allow updating the final score dynamically
+    public void setFinalScore(int finalScore) {
+        this.finalScore = finalScore;
         repaint();
     }
 }

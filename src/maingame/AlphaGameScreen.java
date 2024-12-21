@@ -1,3 +1,5 @@
+package maingame;
+
 import Tetris.Tetris;
 
 
@@ -149,7 +151,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
             stopBackgroundMusic(); // Stop the music when transitioning to the game
             startSnakeGame();
         } else if (option == 1) {
-            // Load Game logic here (Minesweeper)
+            // Load Game logic here (maingame.Minesweeper)
             stopBackgroundMusic(); // Stop the music when transitioning to the game
             loadMinesweeperGame();
         } else if (option == 2) {
@@ -184,11 +186,11 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
     }
 
     private void loadMinesweeperGame() {
-        // Close the AlphaGameScreen by removing its components
+        // Close the maingame.AlphaGameScreen by removing its components
         parentFrame.dispose();
-        // Add the Minesweeper GUI to the parent frame
+        // Add the maingame.Minesweeper GUI to the parent frame
         Minesweeper minesweeper = new Minesweeper();
-        parentFrame.add(minesweeper.frame);  // Add the full Minesweeper frame
+        parentFrame.add(minesweeper.frame);  // Add the full maingame.Minesweeper frame
 
         parentFrame.revalidate();
         parentFrame.repaint();
@@ -198,7 +200,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         // Stop the background music when switching to Sudoku
         stopBackgroundMusic();
 
-        // Create a new instance of SudokuGame and make it visible
+        // Create a new instance of maingame.SudokuGame and make it visible
         SwingUtilities.invokeLater(() -> {
             SudokuGame sudoku = new SudokuGame();
             sudoku.setVisible(true);

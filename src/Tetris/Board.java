@@ -12,7 +12,7 @@ import java.awt.event.KeyEvent;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
-
+import maingame.AlphaGameScreen;
 
 public class Board extends JPanel {
 
@@ -30,8 +30,10 @@ public class Board extends JPanel {
     private Shape curPiece;
     private Tetrominoe[] board;
     private Color backgroundColor = Color.BLACK;
-    private GameOverScreenforTetris tetrisgameover;
+//    private GameOverScreenforTetris tetrisgameover;
     private Clip backgroundMusic;
+    private JPanel endPanel;
+    private boolean soundPlayed = false;
 
     private void playBackgroundMusic(String filePath) {
         try {
@@ -39,6 +41,7 @@ public class Board extends JPanel {
             backgroundMusic = AudioSystem.getClip();
             backgroundMusic.open(audioStream);
             backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
+            soundPlayed = false;
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
@@ -79,7 +82,7 @@ public class Board extends JPanel {
         return board[(y * BOARD_WIDTH) + x];
     }
 
-    void start() {
+     public void start() {
 
         playBackgroundMusic("src/assets/minesweeperbgm.wav");
 
@@ -88,7 +91,7 @@ public class Board extends JPanel {
 
         clearBoard();
         newPiece();
-        tetrisgameover = new GameOverScreenforTetris(numLinesRemoved);
+//        tetrisgameover = new GameOverScreenforTetris(numLinesRemoved);
         timer = new Timer(PERIOD_INTERVAL, new GameCycle());
         timer.start();
     }
@@ -107,25 +110,228 @@ public class Board extends JPanel {
 
         repaint();
     }
-    public void showGameOver() {
-        tetrisgameover.setFinalScore(numLinesRemoved); // Set final score
-        tetrisgameover.setSize(getSize()); // Match the game panel's size
-        add(tetrisgameover); // Add the GameOverScreen panel on top of the game screen
-        tetrisgameover.repaint(); // Refresh to show the game-over screen
 
-        // Stop background music when the game ends
-        stopBackgroundMusic();
+    private void initUI() {
+        endPanel=new JPanel();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
 
-        // Play game over sound when the game ends
-        //playSound("src/assets/game-over-arcade-6435.wav");
+        // Add message panel
+        JPanel messagePanel = createMessagePanel();
+        endPanel.add(messagePanel, gbc);
+
+        // Add button panel
+        gbc.gridy = 1;
+        JPanel buttonPanel = createButtonPanel();
+        endPanel.add(buttonPanel, gbc);
     }
 
-        @Override
+    private void playGameOverSound() {
+        if (!soundPlayed) {
+            try {
+                // Replace with the correct path to your sound file
+                File soundFile = new File("src/assets/game-over-arcade-6435.wav");
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioIn);
+                clip.start();  // Play the sound
+
+                soundPlayed = true;  // Set the flag to true so the sound is played only once
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                e.printStackTrace(); // Handle any exceptions that occur
+            }
+        }
+    }
+
+    private JPanel createMessagePanel() {
+        JPanel panel = new JPanel();
+        panel.setOpaque(false);
+
+        JLabel gameOverLabel = new JLabel("GAME OVER");
+        gameOverLabel.setFont(new Font("Monospaced", Font.BOLD, 50));
+        gameOverLabel.setForeground(Color.WHITE);
+
+        JLabel scoreLabel = new JLabel("Final Score: " + 0);
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        scoreLabel.setForeground(Color.WHITE);
+
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        gameOverLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        scoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panel.add(gameOverLabel);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(scoreLabel);
+
+        return panel;
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.blue);
+
+        JButton restartButton = new JButton("Restart");
+        restartButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        restartButton.setBackground(Color.GREEN);
+        restartButton.setForeground(Color.WHITE);
+
+        JButton backButton = new JButton("Menu");
+        backButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        backButton.setBackground(Color.RED);
+        backButton.setForeground(Color.WHITE);
+
+        // Add functionality for Restart button
+        restartButton.addActionListener(e -> {
+            restartGame();
+        });
+
+        // Add functionality for Menu button
+        backButton.addActionListener(e -> {
+            backToMenu();
+        });
+
+        panel.add(restartButton);
+        panel.add(Box.createHorizontalStrut(10));
+        panel.add(backButton);
+
+        return panel;
+    }
+
+
+
+    public void showGameOver() {
+        // Stop the timer and background music
+        timer.stop();
+        stopBackgroundMusic();
+        playGameOverSound();
+        // Create and configure the end panel
+        endPanel = new JPanel(new GridBagLayout());
+        endPanel.setBackground(new Color(0, 0, 0, 200)); // Semi-transparent black
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        // Add Game Over message
+        JLabel gameOverLabel = new JLabel("GAME OVER");
+        gameOverLabel.setFont(new Font("Monospaced", Font.BOLD, 50));
+        gameOverLabel.setForeground(Color.WHITE);
+        endPanel.add(gameOverLabel, gbc);
+
+        // Add final score
+        gbc.gridy++;
+        JLabel scoreLabel = new JLabel("Final Score: " + numLinesRemoved);
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        scoreLabel.setForeground(Color.WHITE);
+        endPanel.add(scoreLabel, gbc);
+
+        // Add buttons
+        gbc.gridy++;
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.BLACK);
+
+        JButton restartButton = new JButton("Restart");
+        restartButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        restartButton.setBackground(Color.GREEN);
+        restartButton.setForeground(Color.WHITE);
+        restartButton.addActionListener(e -> restartGame());
+
+        JButton backButton = new JButton("Menu");
+        backButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        backButton.setBackground(Color.RED);
+        backButton.setForeground(Color.WHITE);
+        backButton.addActionListener(e -> backToMenu());
+
+        buttonPanel.add(restartButton);
+        buttonPanel.add(Box.createHorizontalStrut(10));
+        buttonPanel.add(backButton);
+
+        endPanel.add(buttonPanel, gbc);
+
+        // Add the end panel to the Board
+        setLayout(new BorderLayout());
+        add(endPanel, BorderLayout.CENTER);
+
+        // Refresh UI
+        revalidate();
+        repaint();
+    }
+
+//    private void restartGame() {
+//        removeAll(); // Clear all components
+//        revalidate();
+//        repaint();
+//        start(); // Restart the game
+//    }
+//
+//    private void backToMenu() {
+//        removeAll(); // Clear all components
+//        revalidate();
+//        repaint();
+//
+//        // Dispose of the current game window
+//        JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+//        if (currentFrame != null) {
+//            currentFrame.dispose();
+//        }
+//
+//        // Open the AlphaGameScreen
+//        EventQueue.invokeLater(() -> {
+//            JFrame frame = new JFrame("Alpha Game System");
+//            AlphaGameScreen screen = new AlphaGameScreen(frame);
+//
+//            frame.add(screen);
+//            frame.setSize(800, 600);
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.setLocationRelativeTo(null);
+//            frame.setResizable(false);
+//            frame.setVisible(true);
+//        });
+//    }
+
+
+    @Override
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
         setBackground(backgroundColor);
         doDrawing(g);
+    }
+
+    private void restartGame() {
+        removeAll(); // Clear all components
+        revalidate();
+        repaint();
+        start(); // Restart the game
+    }
+
+    private void backToMenu() {
+        removeAll(); // Clear all components from the board
+        revalidate();
+        repaint();
+
+        // Dispose of the current game window
+        JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (currentFrame != null) {
+            currentFrame.dispose();
+        }
+
+        // Open the AlphaGameScreen
+        EventQueue.invokeLater(() -> {
+            JFrame frame = new JFrame("Alpha Game System");
+            AlphaGameScreen screen = new AlphaGameScreen(frame);
+
+            frame.add(screen);
+            frame.setSize(800, 600);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setLocationRelativeTo(null);
+            frame.setResizable(false);
+            frame.setVisible(true); // Instantiate the AlphaGameScreen
+//            alphaScreen.setVisible(true); // Make it visible
+        });
     }
 
     private void doDrawing(Graphics g) {

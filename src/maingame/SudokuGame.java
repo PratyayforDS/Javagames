@@ -1,3 +1,5 @@
+package maingame;
+
 import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
@@ -6,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
-import javax.sound.sampled.*;
 
 public class SudokuGame extends JFrame {
     private static final int SIZE = 9;
@@ -41,16 +42,29 @@ public class SudokuGame extends JFrame {
         JButton newGameButton = new JButton("New Game");
         JButton solutionButton = new JButton("Show Solution");
         JButton checkButton = new JButton("Check Answer");
+        JButton menuButton = new JButton("Menu");
+
 
         buttonPanel.add(newGameButton);
         buttonPanel.add(solutionButton);
         buttonPanel.add(checkButton);
+        buttonPanel.add(menuButton);
 
         add(boardPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
+        menuButton.addActionListener(e -> {
+            this.dispose(); // Close the current frame
+            // Return to the game menu
+            stopBackgroundMusic();
+            SwingUtilities.invokeLater(() -> {
+                AlphaGameScreen.main(new String[0]);
+            });
+        });
+
         newGameButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                stopBackgroundMusic();
                 generateNewPuzzle();
                 displayPuzzle();
             }
@@ -72,6 +86,8 @@ public class SudokuGame extends JFrame {
         displayPuzzle();
 //        playBackgroundMusic("src/assets/sudokuBG.wav");
     }
+
+
 
     private void generateNewPuzzle() {
         generateSolution();

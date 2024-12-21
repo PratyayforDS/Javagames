@@ -1,6 +1,6 @@
 # 🎮 Alpha Game System
 
-Alpha Game System is a Java-based game menu system that allows users to select and play different games such as Snake, Minesweeper, Tetris, and Sudoku.
+Alpha Game System is a Java-based game menu system that allows users to select and play different games such as Snake, maingame.Minesweeper, Tetris, and Sudoku.
 
 ## ✨ Features
 
@@ -22,10 +22,10 @@ Alpha Game System is a Java-based game menu system that allows users to select a
 
 ## 🚀 Usage
 
-1. Run the `AlphaGameScreen` class to start the game menu:
+1. Run the `maingame.AlphaGameScreen` class to start the game menu:
     ```sh
-    javac src/AlphaGameScreen.java
-    java src/AlphaGameScreen
+    javac src/maingame.AlphaGameScreen.java
+    java src/maingame.AlphaGameScreen
     ```
 2. Use the arrow keys to navigate the menu and press Enter to select a game.
 3. Enjoy playing the selected game!
@@ -43,11 +43,11 @@ Alpha Game System is a Java-based game menu system that allows users to select a
     ├── Javagamesys.iml
     ├── README.md
     └── src
-        ├── AlphaGameScreen.java
-        ├── GameOverScreen.java
-        ├── Minesweeper.java
-        ├── SnakeGame.java
-        ├── SudokuGame.java
+        ├── maingame.AlphaGameScreen.java
+        ├── maingame.GameOverScreen.java
+        ├── maingame.Minesweeper.java
+        ├── maingame.SnakeGame.java
+        ├── maingame.SudokuGame.java
         ├── Tetris
         └── assets
 ```

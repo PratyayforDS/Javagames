@@ -1,3 +1,5 @@
+package maingame;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -19,7 +21,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
             this.y = y;
         }
     }
-
+    private boolean soundPlayed = false;
     int boardHeight;
     int boardWidth;
     int tileSize = 25;
@@ -66,7 +68,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         gameTimer = new Timer(gameSpeed, this); //implement every time food eaten , dec timer by 50ms
         gameTimer.start();
 
-        // Initialize GameOverScreen (but don't add it to the frame yet)
+        // Initialize maingame.GameOverScreen (but don't add it to the frame yet)
         gameOverScreen = new GameOverScreen(score,parentFrame);
 
         // Play background music
@@ -169,7 +171,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     public void showGameOver() {
         parentFrame.getContentPane().removeAll(); // Clear the parent frame
         gameOverScreen.setFinalScore(score); // Set final score
-        parentFrame.add(gameOverScreen); // Add the GameOverScreen to the parent frame
+        parentFrame.add(gameOverScreen); // Add the maingame.GameOverScreen to the parent frame
         parentFrame.revalidate();
         parentFrame.repaint();
 
@@ -286,6 +288,23 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     private void stopBackgroundMusic() {
         if (backgroundMusicClip != null && backgroundMusicClip.isRunning()) {
             backgroundMusicClip.stop();
+            playGameOverSound();
+        }
+    }
+
+    private void playGameOverSound() {
+        if (!soundPlayed) {
+            try {
+                // Replace with the correct path to your sound file
+                File soundFile = new File("src/assets/game-over-arcade-6435.wav");
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioIn);
+                clip.start();  // Play the sound
+                soundPlayed = true;  // Set the flag to true so the sound is played only once
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                e.printStackTrace(); // Handle any exceptions that occur
+            }
         }
     }
 }

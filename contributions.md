@@ -29,7 +29,7 @@ Below is a detailed breakdown of each team member’s contributions and an expan
 
 ### 🎯 **PratyayforDS**
 #### **Feature Additions:**
-- Developed the **Minesweeper game**, complete with:
+- Developed the **maingame.Minesweeper game**, complete with:
   - Randomized grid generation.
   - Gameplay mechanics like flag placement and mine reveal (Nov 20).
 - Added **sound effects** to improve user feedback during gameplay (Nov 25).
@@ -56,10 +56,10 @@ Below is a detailed breakdown of each team member’s contributions and an expan
 - Added **background music** to elevate the immersive experience of the Tetris gameplay (Nov 25).
 
 #### **Code Integration:**
-- Integrated the **Tetris package** into the main application, accessible via the **AlphaGameScreen** (Nov 24).
+- Integrated the **Tetris package** into the main application, accessible via the **maingame.AlphaGameScreen** (Nov 24).
 
 #### **Bug Fixes and Updates:**
-- Improved the functionality of the **AlphaGameScreen** with minor but impactful updates (Nov 24).
+- Improved the functionality of the **maingame.AlphaGameScreen** with minor but impactful updates (Nov 24).
 
 ---
 
@@ -93,8 +93,8 @@ Here is a detailed timeline of the major contributions and milestones achieved d
 ### **November 20, 2024**
 - **Contributor:** PratyayforDS  
   **Highlights:**
-  - Released the first version of the **Minesweeper game**, featuring dynamic grid generation and gameplay logic.
-  - Authored the first major update to the **README.md**, documenting Minesweeper's mechanics.
+  - Released the first version of the **maingame.Minesweeper game**, featuring dynamic grid generation and gameplay logic.
+  - Authored the first major update to the **README.md**, documenting maingame.Minesweeper's mechanics.
 
 ---
 
@@ -103,14 +103,14 @@ Here is a detailed timeline of the major contributions and milestones achieved d
   **Highlights:**
   - **Adityacyan:** Finalized the development of the **Snake game**, polishing its mechanics and squashing bugs.  
   - **Harsh Martin Topno:** Developed the **Tetris game** with full gameplay functionality and a responsive UI.
-  - **Integration Efforts:** The Tetris package was added to the main application via the **AlphaGameScreen**.
+  - **Integration Efforts:** The Tetris package was added to the main application via the **maingame.AlphaGameScreen**.
 
 ---
 
 ### **November 25, 2024**
 - **Contributors:** PratyayforDS, Harsh Martin Topno, Anshumaan Gangwar  
   **Highlights:**
-  - **PratyayforDS:** Added sound effects to the Minesweeper game and enhanced the **first page** for better UX.  
+  - **PratyayforDS:** Added sound effects to the maingame.Minesweeper game and enhanced the **first page** for better UX.  
   - **Harsh Martin Topno:** Integrated **background music** into the Tetris game, enhancing the gameplay experience.  
   - **Anshumaan Gangwar:** Completed the **Sudoku game** and updated the main menu to include all games.  
   - Collaboration was at its peak, with multiple pull requests reviewed and merged to finalize features.

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Javagamesys:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Javagamesys_jar</output-path>
+    <root id="archive" name="Javagamesys.jar">
+      <element id="module-output" name="Javagamesys" />
+    </root>
+  </artifact>
+</component>

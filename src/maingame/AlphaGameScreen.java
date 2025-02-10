@@ -1,13 +1,11 @@
 package maingame;
 
 import Tetris.Tetris;
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import javax.sound.sampled.*;
 
 public class AlphaGameScreen extends JPanel implements KeyListener, MouseListener {
@@ -16,16 +14,22 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
     private Font pixelFont;
     private JFrame parentFrame; // Reference to the parent frame
     private Clip backgroundMusicClip; // To hold the background music clip
-    private Clip traversalClip; //traversal
+    private Clip traversalClip; // Traversal
+
     public AlphaGameScreen(JFrame frame) {
         this.parentFrame = frame;
 
         // Load custom font
         try {
-            pixelFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/PressStart2P-Regular.ttf")).deriveFont(24f);
+            URL fontURL = getClass().getResource("/assets/PressStart2P-Regular.ttf");
+            if (fontURL != null) {
+                pixelFont = Font.createFont(Font.TRUETYPE_FONT, fontURL.openStream()).deriveFont(24f);
+            } else {
+                System.out.println("Error loading font. Using default font.");
+                pixelFont = new Font("SansSerif", Font.PLAIN, 24);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Error loading font. Using default font.");
             pixelFont = new Font("SansSerif", Font.PLAIN, 24);
         }
 
@@ -41,32 +45,33 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
 
     private void playBackgroundMusic() {
         try {
-            // Load a background music file (adjust the path as needed)
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File("src/assets/MainTheme.wav")); //use wav only
-            backgroundMusicClip = AudioSystem.getClip();
-            backgroundMusicClip.open(audioStream);
-            backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Play the sound in a loop
+            URL soundURL = getClass().getResource("/assets/MainTheme.wav");
+            if (soundURL != null) {
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(soundURL);
+                backgroundMusicClip = AudioSystem.getClip();
+                backgroundMusicClip.open(audioStream);
+                backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Play the sound in a loop
+            } else {
+                System.out.println("Error loading background music.");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error loading or playing background music.");
         }
     }
 
-
     // Method to play sound
-
     private void playkeySound(String soundFile) {
         try {
-            File sound = new File(soundFile);
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(sound);
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioIn);
-
-            // Adjust the volume of the keypress sound
-//            FloatControl volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-//            volumeControl.setValue(-15.0f); // Set the volume lower (e.g., -15 dB)
-
-            clip.start();
+            URL soundURL = getClass().getResource(soundFile);
+            if (soundURL != null) {
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundURL);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioIn);
+                clip.start();
+            } else {
+                System.out.println("Error loading keypress sound.");
+            }
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
         }
@@ -118,13 +123,11 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
 
     @Override
     public void keyPressed(KeyEvent e) {
-        playkeySound("src/assets/Pokemon (A Button) - Sound Effect (HD).wav");
+        playkeySound("/assets/Pokemon_A_Button.wav");
         int keyCode = e.getKeyCode();
         if (keyCode == KeyEvent.VK_UP) {
-
             selectedOption = (selectedOption - 1 + menuOptions.length) % menuOptions.length;
         } else if (keyCode == KeyEvent.VK_DOWN) {
-
             selectedOption = (selectedOption + 1) % menuOptions.length;
         } else if (keyCode == KeyEvent.VK_ENTER) {
             handleMenuSelection(selectedOption);
@@ -147,26 +150,21 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
 
     private void handleMenuSelection(int option) {
         if (option == 0) {
-            // Start Game logic here(snake)
-            stopBackgroundMusic(); // Stop the music when transitioning to the game
+            stopBackgroundMusic();
             startSnakeGame();
         } else if (option == 1) {
-            // Load Game logic here (maingame.Minesweeper)
-            stopBackgroundMusic(); // Stop the music when transitioning to the game
+            stopBackgroundMusic();
             loadMinesweeperGame();
         } else if (option == 2) {
-
             parentFrame.dispose();
             stopBackgroundMusic();
             var game = new Tetris();
             game.setVisible(true);
-
         } else if (option == 3) {
-            stopBackgroundMusic(); // Stop the music when exiting;
+            stopBackgroundMusic();
             loadSudoku();
             System.out.println("Done");
-
-        } else if (option ==4){
+        } else if (option == 4) {
             System.exit(0);
         }
     }
@@ -175,7 +173,7 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
         parentFrame.setTitle("Snake Game 🐍");
         parentFrame.getContentPane().removeAll();
 
-        SnakeGame snakeGame = new SnakeGame(790, 590,parentFrame);
+        SnakeGame snakeGame = new SnakeGame(790, 590, parentFrame);
         parentFrame.add(snakeGame);
 
         snakeGame.setFocusable(true);
@@ -186,43 +184,30 @@ public class AlphaGameScreen extends JPanel implements KeyListener, MouseListene
     }
 
     private void loadMinesweeperGame() {
-        // Close the maingame.AlphaGameScreen by removing its components
         parentFrame.dispose();
-        // Add the maingame.Minesweeper GUI to the parent frame
         Minesweeper minesweeper = new Minesweeper();
-        parentFrame.add(minesweeper.frame);  // Add the full maingame.Minesweeper frame
+        parentFrame.add(minesweeper.frame);
 
         parentFrame.revalidate();
         parentFrame.repaint();
     }
 
     private void loadSudoku() {
-        // Stop the background music when switching to Sudoku
         stopBackgroundMusic();
-
-        // Create a new instance of maingame.SudokuGame and make it visible
         SwingUtilities.invokeLater(() -> {
             SudokuGame sudoku = new SudokuGame();
             sudoku.setVisible(true);
         });
-
-        // Optionally, hide the current frame
         parentFrame.setVisible(false);
     }
 
     // Unused event methods
-    @Override
-    public void keyReleased(KeyEvent e) {}
-    @Override
-    public void keyTyped(KeyEvent e) {}
-    @Override
-    public void mouseClicked(MouseEvent e) {}
-    @Override
-    public void mouseReleased(MouseEvent e) {}
-    @Override
-    public void mouseEntered(MouseEvent e) {}
-    @Override
-    public void mouseExited(MouseEvent e) {}
+    @Override public void keyReleased(KeyEvent e) {}
+    @Override public void keyTyped(KeyEvent e) {}
+    @Override public void mouseClicked(MouseEvent e) {}
+    @Override public void mouseReleased(MouseEvent e) {}
+    @Override public void mouseEntered(MouseEvent e) {}
+    @Override public void mouseExited(MouseEvent e) {}
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Alpha Game System");

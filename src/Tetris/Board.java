@@ -10,7 +10,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.sound.sampled.*;
-import java.io.File;
 import java.io.IOException;
 import maingame.AlphaGameScreen;
 
@@ -30,14 +29,14 @@ public class Board extends JPanel {
     private Shape curPiece;
     private Tetrominoe[] board;
     private Color backgroundColor = Color.BLACK;
-//    private GameOverScreenforTetris tetrisgameover;
+    //    private GameOverScreenforTetris tetrisgameover;
     private Clip backgroundMusic;
     private JPanel endPanel;
     private boolean soundPlayed = false;
 
     private void playBackgroundMusic(String filePath) {
         try {
-            AudioInputStream audioStream = AudioSystem.getAudioInputStream(new File(filePath));
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(getClass().getResource(filePath));
             backgroundMusic = AudioSystem.getClip();
             backgroundMusic.open(audioStream);
             backgroundMusic.loop(Clip.LOOP_CONTINUOUSLY);
@@ -53,38 +52,30 @@ public class Board extends JPanel {
         }
     }
 
-
-
     public Board(Tetris parent) {
-
         initBoard(parent);
     }
 
     private void initBoard(Tetris parent) {
-
         setFocusable(true);
         statusbar = parent.getStatusBar();
         addKeyListener(new TAdapter());
     }
 
     private int squareWidth() {
-
         return (int) getSize().getWidth() / BOARD_WIDTH;
     }
 
     private int squareHeight() {
-
         return (int) getSize().getHeight() / BOARD_HEIGHT;
     }
 
     private Tetrominoe shapeAt(int x, int y) {
-
         return board[(y * BOARD_WIDTH) + x];
     }
 
-     public void start() {
-
-        playBackgroundMusic("src/assets/minesweeperbgm.wav");
+    public void start() {
+        playBackgroundMusic("/assets/minesweeperbgm.wav");
 
         curPiece = new Shape();
         board = new Tetrominoe[BOARD_WIDTH * BOARD_HEIGHT];
@@ -97,22 +88,18 @@ public class Board extends JPanel {
     }
 
     private void pause() {
-
         isPaused = !isPaused;
 
         if (isPaused) {
-
             statusbar.setText("paused");
         } else {
-
             statusbar.setText(String.valueOf(numLinesRemoved));
         }
-
         repaint();
     }
 
     private void initUI() {
-        endPanel=new JPanel();
+        endPanel = new JPanel();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -131,13 +118,10 @@ public class Board extends JPanel {
     private void playGameOverSound() {
         if (!soundPlayed) {
             try {
-                // Replace with the correct path to your sound file
-                File soundFile = new File("src/assets/game-over-arcade-6435.wav");
-                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource("/assets/game-over-arcade-6435.wav"));
                 Clip clip = AudioSystem.getClip();
                 clip.open(audioIn);
                 clip.start();  // Play the sound
-
                 soundPlayed = true;  // Set the flag to true so the sound is played only once
             } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
                 e.printStackTrace(); // Handle any exceptions that occur
@@ -199,8 +183,6 @@ public class Board extends JPanel {
         return panel;
     }
 
-
-
     public void showGameOver() {
         // Stop the timer and background music
         timer.stop();
@@ -260,42 +242,8 @@ public class Board extends JPanel {
         repaint();
     }
 
-//    private void restartGame() {
-//        removeAll(); // Clear all components
-//        revalidate();
-//        repaint();
-//        start(); // Restart the game
-//    }
-//
-//    private void backToMenu() {
-//        removeAll(); // Clear all components
-//        revalidate();
-//        repaint();
-//
-//        // Dispose of the current game window
-//        JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-//        if (currentFrame != null) {
-//            currentFrame.dispose();
-//        }
-//
-//        // Open the AlphaGameScreen
-//        EventQueue.invokeLater(() -> {
-//            JFrame frame = new JFrame("Alpha Game System");
-//            AlphaGameScreen screen = new AlphaGameScreen(frame);
-//
-//            frame.add(screen);
-//            frame.setSize(800, 600);
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.setLocationRelativeTo(null);
-//            frame.setResizable(false);
-//            frame.setVisible(true);
-//        });
-//    }
-
-
     @Override
     public void paintComponent(Graphics g) {
-
         super.paintComponent(g);
         setBackground(backgroundColor);
         doDrawing(g);
@@ -330,23 +278,17 @@ public class Board extends JPanel {
             frame.setLocationRelativeTo(null);
             frame.setResizable(false);
             frame.setVisible(true); // Instantiate the AlphaGameScreen
-//            alphaScreen.setVisible(true); // Make it visible
         });
     }
 
     private void doDrawing(Graphics g) {
-
         var size = getSize();
         int boardTop = (int) size.getHeight() - BOARD_HEIGHT * squareHeight();
 
         for (int i = 0; i < BOARD_HEIGHT; i++) {
-
             for (int j = 0; j < BOARD_WIDTH; j++) {
-
                 Tetrominoe shape = shapeAt(j, BOARD_HEIGHT - i - 1);
-
                 if (shape != Tetrominoe.NoShape) {
-
                     drawSquare(g, j * squareWidth(),
                             boardTop + i * squareHeight(), shape);
                 }
@@ -354,12 +296,9 @@ public class Board extends JPanel {
         }
 
         if (curPiece.getShape() != Tetrominoe.NoShape) {
-
             for (int i = 0; i < 4; i++) {
-
                 int x = curX + curPiece.x(i);
                 int y = curY - curPiece.y(i);
-
                 drawSquare(g, x * squareWidth(),
                         boardTop + (BOARD_HEIGHT - y - 1) * squareHeight(),
                         curPiece.getShape());
@@ -368,118 +307,81 @@ public class Board extends JPanel {
     }
 
     private void dropDown() {
-
         int newY = curY;
-
         while (newY > 0) {
-
             if (!tryMove(curPiece, curX, newY - 1)) {
-
                 break;
             }
-
             newY--;
         }
-
         pieceDropped();
     }
 
     private void oneLineDown() {
-
         if (!tryMove(curPiece, curX, curY - 1)) {
-
             pieceDropped();
         }
     }
 
     private void clearBoard() {
-
         for (int i = 0; i < BOARD_HEIGHT * BOARD_WIDTH; i++) {
-
             board[i] = Tetrominoe.NoShape;
         }
     }
 
     private void pieceDropped() {
-
         for (int i = 0; i < 4; i++) {
-
             int x = curX + curPiece.x(i);
             int y = curY - curPiece.y(i);
             board[(y * BOARD_WIDTH) + x] = curPiece.getShape();
         }
-
         removeFullLines();
-
         if (!isFallingFinished) {
-
             newPiece();
         }
     }
 
     private void newPiece() {
-
         curPiece.setRandomShape();
         curX = BOARD_WIDTH / 2 + 1;
         curY = BOARD_HEIGHT - 1 + curPiece.minY();
-
         if (!tryMove(curPiece, curX, curY)) {
-
             curPiece.setShape(Tetrominoe.NoShape);
             timer.stop();
-
             showGameOver();
         }
     }
 
     private boolean tryMove(Shape newPiece, int newX, int newY) {
-
         for (int i = 0; i < 4; i++) {
-
             int x = newX + newPiece.x(i);
             int y = newY - newPiece.y(i);
-
             if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) {
-
                 return false;
             }
-
             if (shapeAt(x, y) != Tetrominoe.NoShape) {
-
                 return false;
             }
         }
-
         curPiece = newPiece;
         curX = newX;
         curY = newY;
-
         repaint();
-
         return true;
     }
 
     private void removeFullLines() {
-
         int numFullLines = 0;
-
         for (int i = BOARD_HEIGHT - 1; i >= 0; i--) {
-
             boolean lineIsFull = true;
-
             for (int j = 0; j < BOARD_WIDTH; j++) {
-
                 if (shapeAt(j, i) == Tetrominoe.NoShape) {
-
                     lineIsFull = false;
                     break;
                 }
             }
-
             if (lineIsFull) {
-
                 numFullLines++;
-
                 for (int k = i; k < BOARD_HEIGHT - 1; k++) {
                     for (int j = 0; j < BOARD_WIDTH; j++) {
                         board[(k * BOARD_WIDTH) + j] = shapeAt(j, k + 1);
@@ -487,11 +389,8 @@ public class Board extends JPanel {
                 }
             }
         }
-
         if (numFullLines > 0) {
-
             numLinesRemoved += numFullLines;
-
             statusbar.setText(String.valueOf(numLinesRemoved));
             isFallingFinished = true;
             curPiece.setShape(Tetrominoe.NoShape);
@@ -499,7 +398,6 @@ public class Board extends JPanel {
     }
 
     private void drawSquare(Graphics g, int x, int y, Tetrominoe shape) {
-
         Color colors[] = {new Color(0, 0, 0), new Color(204, 102, 102),
                 new Color(102, 204, 102), new Color(102, 102, 204),
                 new Color(204, 204, 102), new Color(204, 102, 204),
@@ -523,52 +421,37 @@ public class Board extends JPanel {
     }
 
     private class GameCycle implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
-
             doGameCycle();
         }
     }
 
     private void doGameCycle() {
-
         update();
         repaint();
     }
 
     private void update() {
-
         if (isPaused) {
-
             return;
         }
-
         if (isFallingFinished) {
-
             isFallingFinished = false;
             newPiece();
         } else {
-
             oneLineDown();
         }
     }
 
     class TAdapter extends KeyAdapter {
-
         @Override
         public void keyPressed(KeyEvent e) {
-
             if (curPiece.getShape() == Tetrominoe.NoShape) {
-
                 return;
             }
-
             int keycode = e.getKeyCode();
-
-            // Java 12 switch expressions
             switch (keycode) {
-
                 case KeyEvent.VK_P -> pause();
                 case KeyEvent.VK_LEFT -> tryMove(curPiece, curX - 1, curY);
                 case KeyEvent.VK_RIGHT -> tryMove(curPiece, curX + 1, curY);

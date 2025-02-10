@@ -6,7 +6,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.sound.sampled.*;
-import java.io.File;
 import java.io.IOException;
 
 public class SnakeGame extends JPanel implements ActionListener, KeyListener {
@@ -68,11 +67,11 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         gameTimer = new Timer(gameSpeed, this); //implement every time food eaten , dec timer by 50ms
         gameTimer.start();
 
-        // Initialize maingame.GameOverScreen (but don't add it to the frame yet)
-        gameOverScreen = new GameOverScreen(score,parentFrame);
+        // Initialize GameOverScreen (but don't add it to the frame yet)
+        gameOverScreen = new GameOverScreen(score, parentFrame);
 
         // Play background music
-        playBackgroundMusic("src/assets/snakegamebgm.wav");
+        playBackgroundMusic("/assets/snakegamebgm.wav");
     }
 
     public void paint(Graphics g) {
@@ -142,7 +141,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
             }
 
             // Play sound when food is eaten
-            playSound("src/assets/apple-crunch-215258_wqAxfUZg.wav"); // Replace with actual file path
+            playSound("/assets/apple-crunch-215258_wqAxfUZg.wav"); // Replace with actual file path
         }
 
         // snake body movement
@@ -171,7 +170,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     public void showGameOver() {
         parentFrame.getContentPane().removeAll(); // Clear the parent frame
         gameOverScreen.setFinalScore(score); // Set final score
-        parentFrame.add(gameOverScreen); // Add the maingame.GameOverScreen to the parent frame
+        parentFrame.add(gameOverScreen); // Add the GameOverScreen to the parent frame
         parentFrame.revalidate();
         parentFrame.repaint();
 
@@ -211,7 +210,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        playkeySound("src/assets/keypresssnk.wav"); // Replace with actual file path
+        playkeySound("/assets/keypresssnk.wav"); // Replace with actual file path
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT && velocityx != 1) {
             velocityx = -1;
@@ -241,9 +240,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     // Method to play sound
     private void playSound(String soundFile) {
         try {
-            File sound = new File(soundFile);
-
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(sound);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource(soundFile));
             Clip clip = AudioSystem.getClip();
             clip.open(audioIn);
             clip.start();
@@ -251,10 +248,10 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
             e.printStackTrace();
         }
     }
+
     private void playkeySound(String soundFile) {
         try {
-            File sound = new File(soundFile);
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(sound);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource(soundFile));
             Clip clip = AudioSystem.getClip();
             clip.open(audioIn);
 
@@ -268,12 +265,10 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-
     // Method to play background music
     private void playBackgroundMusic(String musicFile) {
         try {
-            File music = new File(musicFile);
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(music);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource(musicFile));
             backgroundMusicClip = AudioSystem.getClip();
             backgroundMusicClip.open(audioIn);
             FloatControl volumeControl = (FloatControl) backgroundMusicClip.getControl(FloatControl.Type.MASTER_GAIN);
@@ -295,9 +290,7 @@ public class SnakeGame extends JPanel implements ActionListener, KeyListener {
     private void playGameOverSound() {
         if (!soundPlayed) {
             try {
-                // Replace with the correct path to your sound file
-                File soundFile = new File("src/assets/game-over-arcade-6435.wav");
-                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource("/assets/game-over-arcade-6435.wav"));
                 Clip clip = AudioSystem.getClip();
                 clip.open(audioIn);
                 clip.start();  // Play the sound

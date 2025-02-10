@@ -5,7 +5,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
@@ -15,7 +14,6 @@ public class SudokuGame extends JFrame {
     private int[][] solution = new int[SIZE][SIZE];
     private int[][] puzzle = new int[SIZE][SIZE];
     private Clip backgroundMusicClip;
-//hello
 
     public SudokuGame() {
         setTitle("Sudoku Game");
@@ -43,7 +41,6 @@ public class SudokuGame extends JFrame {
         JButton solutionButton = new JButton("Show Solution");
         JButton checkButton = new JButton("Check Answer");
         JButton menuButton = new JButton("Menu");
-
 
         buttonPanel.add(newGameButton);
         buttonPanel.add(solutionButton);
@@ -87,13 +84,11 @@ public class SudokuGame extends JFrame {
 //        playBackgroundMusic("src/assets/sudokuBG.wav");
     }
 
-
-
     private void generateNewPuzzle() {
         generateSolution();
         copySolutionToPuzzle();
         removeSomeNumbers();
-        playBackgroundMusic("src/assets/sudokuBG.wav");
+        playBackgroundMusic("/assets/sudokuBG.wav");
     }
 
     private void generateSolution() {
@@ -171,7 +166,6 @@ public class SudokuGame extends JFrame {
         if (isCorrect) {
             JOptionPane.showMessageDialog(this, "Congratulations! You solved the puzzle!");
         } else {
-//            stopBackgroundMusic();
             JOptionPane.showMessageDialog(this, "Some cells are incorrect. Keep trying!");
         }
     }
@@ -185,8 +179,7 @@ public class SudokuGame extends JFrame {
 
     private void playBackgroundMusic(String musicFile) {
         try {
-            File music = new File(musicFile);
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(music);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource(musicFile));
             backgroundMusicClip = AudioSystem.getClip();
             backgroundMusicClip.open(audioIn);
             backgroundMusicClip.loop(Clip.LOOP_CONTINUOUSLY); // Loop the background music

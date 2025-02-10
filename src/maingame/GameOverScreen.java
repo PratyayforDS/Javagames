@@ -3,17 +3,12 @@ package maingame;
 import javax.swing.*;
 import java.awt.*;
 import javax.sound.sampled.*;
-import java.io.File;
 import java.io.IOException;
-
-
-
-
+import java.net.URL;
 
 public class GameOverScreen extends JPanel {
 
     private int finalScore;
-    private boolean soundPlayed = false;
     private JPanel endPanel;
     private JFrame parentFrame; // Reference to the parent frame for restarting logic
 
@@ -24,11 +19,12 @@ public class GameOverScreen extends JPanel {
         setOpaque(false);
         endPanel = new JPanel();
         endPanel.setLayout(new GridBagLayout());
-        endPanel.setBackground(Color.blue);
+        endPanel.setBackground(Color.BLUE);
 
         setLayout(new BorderLayout());
         add(endPanel, BorderLayout.CENTER);
 
+        playGameOverSound(); // Play sound when game over screen appears
         initUI();
     }
 
@@ -53,7 +49,7 @@ public class GameOverScreen extends JPanel {
         panel.setOpaque(false);
 
         JLabel gameOverLabel = new JLabel("GAME OVER");
-        gameOverLabel.setFont(new Font("Monospaced", Font.BOLD, 50));
+        gameOverLabel.setFont(loadFont("/assets/PressStart2P-Regular.ttf", 50));
         gameOverLabel.setForeground(Color.WHITE);
 
         JLabel scoreLabel = new JLabel("Final Score: " + finalScore);
@@ -73,7 +69,7 @@ public class GameOverScreen extends JPanel {
 
     private JPanel createButtonPanel() {
         JPanel panel = new JPanel();
-        panel.setBackground(Color.blue);
+        panel.setBackground(Color.BLUE);
 
         JButton restartButton = new JButton("Restart");
         restartButton.setFont(new Font("SansSerif", Font.BOLD, 16));
@@ -86,14 +82,10 @@ public class GameOverScreen extends JPanel {
         backButton.setForeground(Color.WHITE);
 
         // Add functionality for Restart button
-        restartButton.addActionListener(e -> {
-            restartSnakeGame();
-        });
+        restartButton.addActionListener(e -> restartSnakeGame());
 
         // Add functionality for Menu button
-        backButton.addActionListener(e -> {
-            goBackToMenu();
-        });
+        backButton.addActionListener(e -> goBackToMenu());
 
         panel.add(restartButton);
         panel.add(Box.createHorizontalStrut(10));
@@ -106,7 +98,7 @@ public class GameOverScreen extends JPanel {
         // Reset the frame and start the Snake game
         parentFrame.getContentPane().removeAll();
 
-        SnakeGame snakeGame = new SnakeGame(790, 590,parentFrame);
+        SnakeGame snakeGame = new SnakeGame(790, 590, parentFrame);
         parentFrame.add(snakeGame);
 
         snakeGame.setFocusable(true);
@@ -129,6 +121,35 @@ public class GameOverScreen extends JPanel {
         parentFrame.revalidate();
         parentFrame.repaint();
     }
+
+    private void playGameOverSound() {
+        try {
+            URL soundURL = getClass().getResource("/assets/GameOver.wav");
+            if (soundURL != null) {
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundURL);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioIn);
+                clip.start();
+            } else {
+                System.err.println("GameOver sound file not found!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Font loadFont(String path, float size) {
+        try {
+            URL fontURL = getClass().getResource(path);
+            if (fontURL != null) {
+                return Font.createFont(Font.TRUETYPE_FONT, fontURL.openStream()).deriveFont(size);
+            }
+        } catch (Exception e) {
+            System.err.println("Font loading failed, using default font.");
+        }
+        return new Font("Monospaced", Font.BOLD, (int) size);
+    }
+
 
     // Allow updating the final score dynamically
     public void setFinalScore(int finalScore) {
